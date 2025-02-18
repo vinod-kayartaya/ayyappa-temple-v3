@@ -27,7 +27,7 @@ services:
       - MYSQL_DB=templedb
       - MYSQL_USERNAME=root
       - MYSQL_PASSWORD=Cyblore123!
-      - APP_FRONTEND_URL=http://localhost:3000
+      - APP_FRONTEND_URL=http://54.87.44.24
       - MAIL_HOST=smtp.gmail.com
       - MAIL_PORT=587
       - MAIL_USERNAME=vinod@cyblore.com
