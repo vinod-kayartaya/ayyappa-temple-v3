@@ -1,0 +1,56 @@
+services:
+  frontend:
+    build: 
+      context: ./temple-manager
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    environment:
+      - REACT_APP_API_URL=http://localhost:8080
+    restart: always
+
+  backend:
+    build: 
+      context: ./temple-manager-api
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/templedb
+      - MYSQL_HOST=db
+      - MYSQL_PORT=3306
+      - MYSQL_DB=templedb
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=Cyblore123!
+      - APP_FRONTEND_URL=http://localhost:3000
+      - MAIL_HOST=smtp.gmail.com
+      - MAIL_PORT=587
+      - MAIL_USERNAME=vinod@cyblore.com
+      - MAIL_PASSWORD=mkcv tqmp tuuq avme
+      - MAIL_SMTP_AUTH=true
+      - MAIL_SMTP_STARTTLS=true
+    restart: always
+
+  db:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=templedb
+      - MYSQL_ROOT_PASSWORD=Cyblore123!
+    volumes:
+      - templedbvolume:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    restart: always
+
+volumes:
+  templedbvolume:
+    external: true 

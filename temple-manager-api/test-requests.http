@@ -1,0 +1,565 @@
+@host = localhost:8080
+@auth_token = eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2aW5vZCIsImlhdCI6MTczOTc1NjcyOCwiZXhwIjoxNzQyMzQ4NzI4fQ.aWknkRZbXFVdpZI781QGa3SGzZBjG6pgYEe1X3A5JWWPckPY2UL3JDQvQzktK9LSvmebLLjGSt80yoxeSkzarg
+
+@category_id = 5957f6e2-00ca-4a26-862f-b39a4946d57b
+
+### Login to get token
+POST /api/auth/login
+Host: {{host}}
+Content-Type: application/json
+
+{
+    "username": "vinod",
+    "password": "Welcome#123"
+}
+
+> {% client.global.set("auth_token", response.body.token); %}
+
+### Get all categories
+GET /api/categories
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Create a category
+POST /api/categories
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+    "code": 1,
+    "name": "Clothes",
+    "description": "Towels, shalyas etc"
+}
+
+### Get category by ID
+GET /api/categories/{{category_id}}
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Update category
+PUT /api/categories/{{category_id}}
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+    "code": 1,
+    "name": "Clothe items",
+    "description": "Towels, shalyas etc"
+}
+
+### Delete category
+DELETE /api/categories/{{category_id}}
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Test error - Create category with duplicate code
+POST /api/categories
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+    "code": 1,
+    "name": "Test Category",
+    "description": "This should fail due to duplicate code"
+}
+
+### Test error - Get non-existent category
+GET /api/categories/non-existent-id
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Create a supplier
+POST /api/suppliers
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+    "code": 1,
+    "name": "ABC Suppliers",
+    "shortForm": "ABC",
+    "type": "Wholesale",
+    "address": "123 Main St, City",
+    "phone": "1234567890",
+    "email": "contact@abc.com",
+    "reorderLevel": 10,
+    "marginPercentage": 15.5
+}
+
+### Get all suppliers
+GET /api/suppliers
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Get supplier by ID
+GET /api/suppliers/{{supplier_id}}
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Update supplier
+PUT /api/suppliers/{{supplier_id}}
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+    "code": 1001,
+    "name": "ABC Suppliers Ltd",
+    "shortForm": "ABC",
+    "type": "Wholesale",
+    "address": "123 Main St, City",
+    "phone": "1234567890",
+    "email": "contact@abc.com",
+    "reorderLevel": 15,
+    "marginPercentage": 18.5
+}
+
+### Delete supplier
+DELETE /api/suppliers/{{supplier_id}}
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Create a deity
+POST /api/deities
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+    "name": "Ayyappa"
+}
+
+
+### Get all deities
+GET /api/deities
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Get deity by ID
+GET /api/deities/440887ca-f6c7-4ffb-9f6a-716758a9c04d
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+
+### Delete deity
+DELETE /api/deities/440887ca-f6c7-4ffb-9f6a-716758a9c04d
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Test error - Get non-existent deity
+GET /api/deities/non-existent-id
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Create a product
+POST /api/products
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+    "code": 1001,
+    "name": "SVT black towel",
+    "unit": "NOS",
+    "supplierId": "b23e85a2-eed6-4ffa-b87c-c4ccc70b538b",
+    "categoryId": "5957f6e2-00ca-4a26-862f-b39a4946d57b",
+    "price": 100.00,
+    "costPrice": 35.00,
+    "commissionPercentage": 0.00,
+    "taxPercentage": 0.00,
+    "astPercentage": 0.00,
+    "openingStock": 200,
+    "blocked": 0,
+    "quantityInStock": 200
+}
+
+### Get all products
+GET /api/products
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Get product by ID
+GET /api/products/{{product_id}}
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Update product
+PUT /api/products/{{product_id}}
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+    "code": 1001,
+    "name": "Premium Towel",
+    "unit": "Piece",
+    "supplierId": "{{supplier_id}}",
+    "categoryId": "{{category_id}}",
+    "price": 120.00,
+    "costPrice": 90.00,
+    "commissionPercentage": 5.00,
+    "taxPercentage": 18.00,
+    "astPercentage": 1.00,
+    "openingStock": 100,
+    "blocked": 0
+}
+
+### Delete product
+DELETE /api/products/{{product_id}}
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Test error - Create product with duplicate code
+POST /api/products
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+    "code": 1001,
+    "name": "Test Product",
+    "price": 100.00,
+    "costPrice": 80.00
+}
+
+### Create an offering category
+POST /api/offering-categories
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+    "name": "Others"
+}
+
+### Get all offering categories
+GET /api/offering-categories
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Get offering category by ID
+GET /api/offering-categories/{{offering_category_id}}
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Update offering category
+PUT /api/offering-categories/{{offering_category_id}}
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+    "name": "Special Archana"
+}
+
+### Delete offering category
+DELETE /api/offering-categories/{{offering_category_id}}
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Test error - Get non-existent offering category
+GET /api/offering-categories/non-existent-id
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Create a vazhipadu
+POST /api/vazhipadu
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+    "code": 1001,
+    "vazhipaduName": "Special Archana",
+    "amount": 201.00,
+    "dailyCount": 0,
+    "timeAmPm": 1,
+    "timesPerDay": 0,
+    "days": 1,
+    "blocking": false,
+    "seasonal": false,
+    "offeringCategoryId": "d1a30026-933a-499e-b01f-d19aa0a9d648",
+    "receipt": true,
+    "bookingRequired": true
+}
+
+> {% client.global.set("vazhipadu_id", response.body.id); %}
+
+### Get all vazhipadus
+GET /api/vazhipadu
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Get vazhipadu by ID
+GET /api/vazhipadu/{{vazhipadu_id}}
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Update vazhipadu
+PUT /api/vazhipadu/{{vazhipadu_id}}
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+    "code": 1001,
+    "vazhipaduName": "Special Archana Premium",
+    "amount": 150.00,
+    "dailyCount": 50,
+    "timeAmPm": 1,
+    "timesPerDay": 2,
+    "days": 1,
+    "blocking": false,
+    "seasonal": false,
+    "offeringCategoryId": "{{offering_category_id}}",
+    "receipt": true,
+    "bookingRequired": true,
+    "accountHeadId": "1",
+    "accountSubHeadId": "1"
+}
+
+### Delete vazhipadu
+DELETE /api/vazhipadu/{{vazhipadu_id}}
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Get vazhipadu by code
+GET /api/vazhipadu/by-code/91
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Test error - Create vazhipadu with duplicate code
+POST /api/vazhipadu
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+    "code": 1001,
+    "vazhipaduName": "Test Vazhipadu",
+    "amount": 100.00,
+    "dailyCount": 100,
+    "receipt": true,
+    "bookingRequired": false
+}
+
+### Test error - Get non-existent vazhipadu
+GET /api/vazhipadu/non-existent-id
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Create a role
+POST /api/roles
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+    "role": "USER"
+}
+
+> {% client.global.set("role_id", response.body.id); %}
+
+### Get all roles
+GET /api/roles
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Get role by ID
+GET /api/roles/{{role_id}}
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Update role
+PUT /api/roles/{{role_id}}
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+    "role": "POWER_USER"
+}
+
+### Delete role
+DELETE /api/roles/{{role_id}}
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Test error - Create duplicate role
+POST /api/roles
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+    "role": "ADMIN"
+}
+
+### Test error - Get non-existent role
+GET /api/roles/999
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Create a user
+POST /api/users
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+    "username": "john.doe",
+    "firstname": "John",
+    "lastname": "Doe",
+    "primaryEmail": "john.doe@example.com",
+    "primaryPhone": "1234567890",
+    "password": "Welcome#123",
+    "designation": "Staff",
+    "roleIds": [2],
+    "isActive": true
+}
+
+> {% client.global.set("user_id", response.body.id); %}
+
+### Get all users
+GET /api/users
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Get user by ID
+GET /api/users/{{user_id}}
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Update user
+PUT /api/users/{{user_id}}
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+    "username": "john.doe",
+    "firstname": "John",
+    "lastname": "Doe",
+    "primaryEmail": "john.doe@example.com",
+    "primaryPhone": "9876543210",
+    "designation": "Senior Staff",
+    "roleIds": [2, 3],
+    "isActive": true
+}
+
+### Delete user
+DELETE /api/users/{{user_id}}
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Test error - Create user with duplicate username
+POST /api/users
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+    "username": "vinod",
+    "firstname": "Test",
+    "lastname": "User",
+    "primaryEmail": "test@example.com",
+    "password": "Welcome#123",
+    "roleIds": [2]
+}
+
+### Test error - Get non-existent user
+GET /api/users/999
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Request password reset
+POST /api/auth/reset-password
+Host: {{host}}
+Content-Type: application/json
+
+{
+    "email": "vinod@vinod.co"
+}
+
+### Update password with reset token
+POST /api/auth/update-password
+Host: {{host}}
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzUxMiJ9...",
+    "newPassword": "NewSecurePass#123"
+}
+
+### Create a devotee offering
+POST /api/devotee-offerings
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+    "transactionDate": "2024-02-17",
+    "offeringDate": "2024-02-18",
+    "items": [
+        {
+            "devoteeMobileNumber": "9876543210",
+            "vazhipaduId": "{{vazhipadu_id}}",
+            "devoteeName": "Vinod Kumar",
+            "devoteeNakshtram": "Pooram",
+            "deityName": "Ayyappa",
+            "nos": 1,
+            "amount": 101.00
+        },
+        {
+            "devoteeMobileNumber": "9876543210",
+            "vazhipaduId": "{{vazhipadu_id}}",
+            "devoteeName": "Vinod Kumar",
+            "devoteeNakshtram": "Pooram",
+            "deityName": "Ganapathi",
+            "nos": 2,
+            "amount": 51.00
+        }
+    ]
+}
+
+> {% client.global.set("offering_id", response.body.id); %}
+
+### Get devotee offerings
+GET /api/devotee-offerings
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Get devotee offerings by date range
+
+GET /api/devotee-offerings?startDate=2024-02-18&endDate=2024-02-18
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Get devotee offering by ID
+GET /api/devotee-offerings/{{offering_id}}
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Delete devotee offering
+DELETE /api/devotee-offerings/{{offering_id}}
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Get devotee names by phone number
+GET /api/devotee-offerings/devotee-names?phoneNumber=9731424784
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+
+
+###
+
+POST /api/devotee-offerings
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{"transactionDate":"2025-02-18","offeringDate":"2025-02-18","items":[{"devoteeMobileNumber":"9880098800","vazhipaduId":"fb93fc50-ba36-4f99-b8b2-1c2abf8972dc","devoteeName":"Rajesh","devoteeNakshtram":"Ashwini","deityName":"Ayyappa Swamy","nos":1,"amount":201}]}

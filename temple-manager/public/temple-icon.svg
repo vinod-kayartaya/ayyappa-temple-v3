@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="512" height="512" fill="#f0f0f0" rx="64" ry="64"/>
+  
+  <!-- Temple Structure -->
+  <path d="M256 80 L456 200 L456 440 L56 440 L56 200 Z" 
+        fill="#4a5568" stroke="#2d3748" stroke-width="12"/>
+  
+  <!-- Roof Layers -->
+  <path d="M156 280 L356 280 L356 440 L156 440 Z" 
+        fill="#718096"/>
+  <path d="M206 360 L306 360 L306 440 L206 440 Z" 
+        fill="#4a5568"/>
+  
+  <!-- Entrance -->
+  <rect x="226" y="380" width="60" height="60" 
+        fill="#2d3748"/>
+  
+  <!-- Decorative Elements -->
+  <circle cx="256" cy="180" r="30" fill="#ed8936"/>
+  <rect x="226" y="240" width="60" height="20" fill="#ed8936"/>
+</svg> 

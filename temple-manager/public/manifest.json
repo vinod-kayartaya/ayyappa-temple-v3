@@ -1,0 +1,26 @@
+{
+  "short_name": "Temple Manager",
+  "name": "Temple Manager Application",
+  "icons": [
+    {
+      "src": "flower.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "flower.svg",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "flower.svg",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
