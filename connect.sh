@@ -1,1 +1,1 @@
-ssh -i "temple-ec2.pem" ec2-user@ec2-54-234-185-244.compute-1.amazonaws.com
+ssh -i "temple-ec2.pem" ec2-user@ec2-54-87-44-24.compute-1.amazonaws.com

@@ -4,7 +4,7 @@ services:
       context: ./temple-manager
       dockerfile: Dockerfile
     ports:
-      - "3000:80"
+      - "80:80"
     depends_on:
       - backend
     environment:
