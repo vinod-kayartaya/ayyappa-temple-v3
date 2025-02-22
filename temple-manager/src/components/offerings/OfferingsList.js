@@ -3,6 +3,7 @@ import { fetchDevoteeOfferings } from '../../services/api';
 
 function OfferingsList() {
   const [offerings, setOfferings] = useState([]);
+  const [filteredOfferings, setFilteredOfferings] = useState([]);
   const [selectedOffering, setSelectedOffering] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -10,6 +11,7 @@ function OfferingsList() {
     startDate: new Date().toISOString().split('T')[0],
     endDate: new Date().toISOString().split('T')[0],
   });
+  const [searchTerm, setSearchTerm] = useState('');
 
   const loadOfferings = React.useCallback(async () => {
     try {
@@ -18,7 +20,14 @@ function OfferingsList() {
         dateRange.startDate,
         dateRange.endDate
       );
-      setOfferings(data);
+      
+      // Sort offerings by createdAt in descending order
+      const sortedOfferings = data.sort((a, b) => 
+        new Date(b.createdAt) - new Date(a.createdAt)
+      );
+      
+      setOfferings(sortedOfferings);
+      setFilteredOfferings(sortedOfferings);
       setSelectedOffering(null);
     } catch (err) {
       setError('Failed to load offerings');
@@ -30,6 +39,31 @@ function OfferingsList() {
   useEffect(() => {
     loadOfferings();
   }, [loadOfferings]);
+
+  // Add a helper function to format bill number
+  const formatBillNumber = (id) => {
+    return String(id).padStart(6, '0');
+  };
+
+  // Update the search filter
+  useEffect(() => {
+    const filtered = offerings.filter(offering => {
+      const searchLower = searchTerm.toLowerCase();
+      const hasMatchingName = offering.items.some(item => 
+        item.devoteeName.toLowerCase().includes(searchLower)
+      );
+      const hasMatchingNakshatra = offering.items.some(item => 
+        item.devoteeNakshtram.toLowerCase().includes(searchLower)
+      );
+      const hasMatchingPhone = offering.items.some(item => 
+        item.devoteeMobileNumber.includes(searchLower)
+      );
+      const matchesBillNumber = formatBillNumber(offering.id).includes(searchLower);
+      
+      return hasMatchingName || hasMatchingNakshatra || matchesBillNumber || hasMatchingPhone;
+    });
+    setFilteredOfferings(filtered);
+  }, [searchTerm, offerings]);
 
   const handleOfferingSelect = (offering) => {
     setSelectedOffering(offering);
@@ -76,6 +110,17 @@ function OfferingsList() {
                 </div>
               </div>
 
+              {/* Search Filter */}
+              <div className='mb-3'>
+                <input
+                  type='text'
+                  className='form-control'
+                  placeholder='Search by name, star, phone or bill number...'
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+
               {/* Offerings List */}
               {loading ? (
                 <div className='text-center'>
@@ -87,7 +132,7 @@ function OfferingsList() {
                 <div className='alert alert-danger'>{error}</div>
               ) : (
                 <div className='list-group'>
-                  {offerings.map((offering) => (
+                  {filteredOfferings.map((offering) => (
                     <button
                       key={offering.id}
                       className={`list-group-item list-group-item-action ${
@@ -100,28 +145,24 @@ function OfferingsList() {
                           <div className='fw-bold'>
                             {offering.items[0]?.devoteeName || 'Unknown'}
                           </div>
+                          <small>Bill #: {formatBillNumber(offering.id)}</small>
+                          <br />
                           <small>
-                            Transaction:{' '}
-                            {new Date(
-                              offering.transactionDate
-                            ).toLocaleDateString()}
+                            Phone: {offering.items[0]?.devoteeMobileNumber || 'N/A'}
                           </small>
                           <br />
                           <small>
-                            Offering:{' '}
-                            {new Date(
-                              offering.offeringDate
-                            ).toLocaleDateString()}
+                            Transaction: {new Date(offering.transactionDate).toLocaleDateString()}
+                          </small>
+                          <br />
+                          <small>
+                            Offering: {new Date(offering.offeringDate).toLocaleDateString()}
                           </small>
                         </div>
                         <div className='text-end'>
                           <div>{offering.items.length} item(s)</div>
                           <div>
-                            ₹
-                            {offering.items.reduce(
-                              (sum, item) => sum + item.amount,
-                              0
-                            )}
+                            ₹{offering.items.reduce((sum, item) => sum + item.amount, 0)}
                           </div>
                         </div>
                       </div>
@@ -144,23 +185,20 @@ function OfferingsList() {
                   <div className='mb-4'>
                     <h6>Transaction Information</h6>
                     <p className='mb-1'>
-                      Transaction Date:{' '}
-                      {new Date(
-                        selectedOffering.transactionDate
-                      ).toLocaleDateString()}
+                      <strong>Bill #:</strong> {formatBillNumber(selectedOffering.id)}
                     </p>
                     <p className='mb-1'>
-                      Offering Date:{' '}
-                      {new Date(
-                        selectedOffering.offeringDate
-                      ).toLocaleDateString()}
+                      <strong>Phone:</strong> {selectedOffering.items[0]?.devoteeMobileNumber || 'N/A'}
                     </p>
                     <p className='mb-1'>
-                      Created By: {selectedOffering.createdBy}
+                      Transaction Date: {new Date(selectedOffering.transactionDate).toLocaleDateString()}
                     </p>
                     <p className='mb-1'>
-                      Created At:{' '}
-                      {new Date(selectedOffering.createdAt).toLocaleString()}
+                      Offering Date: {new Date(selectedOffering.offeringDate).toLocaleDateString()}
+                    </p>
+                    <p className='mb-1'>Created By: {selectedOffering.createdBy}</p>
+                    <p className='mb-1'>
+                      Created At: {new Date(selectedOffering.createdAt).toLocaleString()}
                     </p>
                   </div>
 

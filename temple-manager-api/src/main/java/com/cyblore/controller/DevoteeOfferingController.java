@@ -38,7 +38,7 @@ public class DevoteeOfferingController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getOffering(@PathVariable String id) {
+    public ResponseEntity<?> getOffering(@PathVariable Long id) {
         try {
             DevoteeOffering offering = service.getOffering(id);
             return ResponseEntity.ok(offering);
@@ -49,7 +49,7 @@ public class DevoteeOfferingController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteOffering(@PathVariable String id) {
+    public ResponseEntity<?> deleteOffering(@PathVariable Long id) {
         try {
             service.deleteOffering(id);
             return ResponseEntity.ok()

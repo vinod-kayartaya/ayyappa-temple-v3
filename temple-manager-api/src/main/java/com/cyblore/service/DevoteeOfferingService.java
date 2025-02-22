@@ -15,6 +15,8 @@ import java.security.Principal;
 import java.util.List;
 import com.cyblore.dto.DevoteeNameNakshtramDto;
 import java.time.LocalDate;
+import java.util.stream.Collectors;
+import com.cyblore.dto.DevoteeOfferingResponseDto;
 
 @Service
 public class DevoteeOfferingService {
@@ -30,7 +32,6 @@ public class DevoteeOfferingService {
     @Transactional
     public DevoteeOffering createOffering(DevoteeOfferingRequestDto request, Principal principal) {
         DevoteeOffering offering = new DevoteeOffering();
-        offering.setId(UUID.randomUUID().toString());
         offering.setTransactionDate(request.getTransactionDate());
         offering.setOfferingDate(request.getOfferingDate());
         offering.setCreatedBy(principal.getName());
@@ -40,10 +41,10 @@ public class DevoteeOfferingService {
             DevoteeOfferingItem offeringItem = new DevoteeOfferingItem();
             offeringItem.setId(UUID.randomUUID().toString());
             offeringItem.setDevoteeOffering(offering);
-            
+
             Vazhipadu vazhipadu = vazhipaduRepository.findById(item.getVazhipaduId())
                     .orElseThrow(() -> new ResourceNotFoundException("Vazhipadu not found"));
-            
+
             offeringItem.setVazhipadu(vazhipadu);
             offeringItem.setDevoteeName(item.getDevoteeName());
             offeringItem.setDevoteeMobileNumber(item.getDevoteeMobileNumber());
@@ -51,20 +52,20 @@ public class DevoteeOfferingService {
             offeringItem.setDeityName(item.getDeityName());
             offeringItem.setNos(item.getNos());
             offeringItem.setAmount(item.getAmount());
-            
+
             offering.getItems().add(offeringItem);
         });
 
         return repository.save(offering);
     }
 
-    public DevoteeOffering getOffering(String id) {
+    public DevoteeOffering getOffering(Long id) {
         return repository.findByIdWithItems(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Offering not found"));
     }
 
     @Transactional
-    public void deleteOffering(String id) {
+    public void deleteOffering(Long id) {
         if (!repository.existsById(id)) {
             throw new ResourceNotFoundException("Offering not found");
         }
@@ -78,4 +79,45 @@ public class DevoteeOfferingService {
     public List<DevoteeOffering> getAllOfferings(LocalDate startDate, LocalDate endDate) {
         return repository.findAllWithItemsAndVazhipaduByDateRange(startDate, endDate);
     }
-} 
+
+    public List<DevoteeOfferingResponseDto> getDevoteeOfferings(LocalDateTime startDate, LocalDateTime endDate) {
+        List<DevoteeOffering> offerings;
+        if (startDate != null && endDate != null) {
+            offerings = repository.findByDateRangeOrderByCreatedAtDesc(startDate, endDate);
+        } else {
+            offerings = repository.findAllByOrderByCreatedAtDesc();
+        }
+        return offerings.stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    private DevoteeOfferingResponseDto mapToDto(DevoteeOffering offering) {
+        DevoteeOfferingResponseDto dto = new DevoteeOfferingResponseDto();
+        dto.setId(offering.getId());
+        dto.setTransactionDate(offering.getTransactionDate());
+        dto.setOfferingDate(offering.getOfferingDate());
+        dto.setCreatedBy(offering.getCreatedBy());
+        dto.setCreatedAt(offering.getCreatedAt());
+        dto.setLastUpdatedBy(offering.getLastUpdatedBy());
+        dto.setLastUpdatedAt(offering.getLastUpdatedAt());
+
+        dto.setItems(offering.getItems().stream()
+                .map(item -> {
+                    DevoteeOfferingResponseDto.DevoteeOfferingItemResponseDto itemDto = new DevoteeOfferingResponseDto.DevoteeOfferingItemResponseDto();
+                    itemDto.setId(item.getId());
+                    itemDto.setDevoteeMobileNumber(item.getDevoteeMobileNumber());
+                    itemDto.setVazhipaduId(item.getVazhipadu().getId());
+                    itemDto.setVazhipaduName(item.getVazhipadu().getVazhipaduName());
+                    itemDto.setDevoteeName(item.getDevoteeName());
+                    itemDto.setDevoteeNakshtram(item.getDevoteeNakshtram());
+                    itemDto.setDeityName(item.getDeityName());
+                    itemDto.setNos(item.getNos());
+                    itemDto.setAmount(item.getAmount());
+                    return itemDto;
+                })
+                .collect(Collectors.toList()));
+
+        return dto;
+    }
+}

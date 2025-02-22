@@ -165,8 +165,9 @@ INSERT INTO `roles` VALUES (1,'ADMIN','2024-08-19 12:51:36','system');
 
 INSERT INTO `users_roles` VALUES (1,1,'2024-08-19 12:51:36','system');
 
-CREATE TABLE devotee_offerings (
-    id VARCHAR(36) PRIMARY KEY,
+-- Create new tables with desired structure
+CREATE TABLE devotee_offerings_new (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     transaction_date DATE NOT NULL,
     offering_date DATE NOT NULL,
     created_by VARCHAR(50) NOT NULL,
@@ -175,9 +176,9 @@ CREATE TABLE devotee_offerings (
     last_updated_at TIMESTAMP
 );
 
-CREATE TABLE devotee_offering_items (
+CREATE TABLE devotee_offering_items_new (
     id VARCHAR(36) PRIMARY KEY,
-    devotee_offering_id VARCHAR(36) NOT NULL,
+    devotee_offering_id BIGINT NOT NULL,
     devotee_mobile_number VARCHAR(15),
     vazhipadu_id VARCHAR(36) NOT NULL,
     devotee_name VARCHAR(100) NOT NULL,
@@ -185,6 +186,41 @@ CREATE TABLE devotee_offering_items (
     deity_name VARCHAR(50),
     nos INTEGER NOT NULL DEFAULT 1,
     amount DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (devotee_offering_id) REFERENCES devotee_offerings(id),
+    FOREIGN KEY (devotee_offering_id) REFERENCES devotee_offerings_new(id),
     FOREIGN KEY (vazhipadu_id) REFERENCES vazhipadu(id)
 );
+
+-- Copy data to new tables
+INSERT INTO devotee_offerings_new (transaction_date, offering_date, created_by, created_at, last_updated_by, last_updated_at)
+SELECT transaction_date, offering_date, created_by, created_at, last_updated_by, last_updated_at
+FROM devotee_offerings;
+
+-- Create a mapping table to track old and new IDs
+CREATE TEMPORARY TABLE id_mapping (
+    old_id VARCHAR(36),
+    new_id BIGINT
+);
+
+INSERT INTO id_mapping (old_id, new_id)
+SELECT o.id, n.id
+FROM devotee_offerings o
+JOIN devotee_offerings_new n ON 
+    o.transaction_date = n.transaction_date AND 
+    o.offering_date = n.offering_date AND 
+    o.created_at = n.created_at;
+
+-- Copy items with new offering IDs
+INSERT INTO devotee_offering_items_new
+SELECT i.id, m.new_id, i.devotee_mobile_number, i.vazhipadu_id, 
+       i.devotee_name, i.devotee_nakshtram, i.deity_name, i.nos, i.amount
+FROM devotee_offering_items i
+JOIN id_mapping m ON i.devotee_offering_id = m.old_id;
+
+-- Drop old tables and rename new ones
+DROP TABLE devotee_offering_items;
+DROP TABLE devotee_offerings;
+
+RENAME TABLE devotee_offerings_new TO devotee_offerings;
+RENAME TABLE devotee_offering_items_new TO devotee_offering_items;
+
+DROP TEMPORARY TABLE id_mapping;

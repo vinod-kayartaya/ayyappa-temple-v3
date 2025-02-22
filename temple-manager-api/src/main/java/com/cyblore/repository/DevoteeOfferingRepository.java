@@ -6,12 +6,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface DevoteeOfferingRepository extends JpaRepository<DevoteeOffering, String> {
+public interface DevoteeOfferingRepository extends JpaRepository<DevoteeOffering, Long> {
     @Query("SELECT d FROM DevoteeOffering d LEFT JOIN FETCH d.items WHERE d.id = :id")
-    Optional<DevoteeOffering> findByIdWithItems(String id);
+    Optional<DevoteeOffering> findByIdWithItems(Long id);
     
     List<DevoteeOffering> findByOfferingDateBetween(LocalDate startDate, LocalDate endDate);
 
@@ -33,4 +34,18 @@ public interface DevoteeOfferingRepository extends JpaRepository<DevoteeOffering
     List<DevoteeOffering> findAllWithItemsAndVazhipaduByDateRange(
             @Param("startDate") LocalDate startDate, 
             @Param("endDate") LocalDate endDate);
+
+    // Method to find all offerings ordered by created_at descending
+    List<DevoteeOffering> findAllByOrderByCreatedAtDesc();
+    
+    // Method to find offerings between dates ordered by created_at descending
+    @Query(value = "SELECT * FROM devotee_offerings " +
+           "WHERE (:startDate IS NULL OR created_at >= :startDate) " +
+           "AND (:endDate IS NULL OR created_at <= :endDate) " +
+           "ORDER BY created_at DESC", 
+           nativeQuery = true)
+    List<DevoteeOffering> findByDateRangeOrderByCreatedAtDesc(
+        @Param("startDate") LocalDateTime startDate,
+        @Param("endDate") LocalDateTime endDate
+    );
 } 
