@@ -249,6 +249,7 @@ function DevoteeOffering() {
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   onKeyPress={handlePhoneNumberSubmit}
                   placeholder='Enter phone number and press Enter'
+                  autoFocus
                 />
               </div>
 

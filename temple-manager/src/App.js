@@ -16,6 +16,9 @@ import User from './pages/user/User';
 import ResetPassword from './components/auth/ResetPassword';
 import ResetPasswordForm from './components/auth/ResetPasswordForm';
 import OfferingsList from './components/offerings/OfferingsList';
+import Sales from './pages/billing/Sales';
+import Donations from './pages/billing/Donations';
+import DevoteeOffering from './components/offerings/DevoteeOffering';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useSelector((state) => state.auth);
@@ -110,6 +113,31 @@ function App() {
             element={
               <ProtectedRoute>
                 <OfferingsList />
+              </ProtectedRoute>
+            }
+          />
+          {/* Billing Routes */}
+          <Route
+            path="/billing/vazhipadu"
+            element={
+              <ProtectedRoute>
+                <DevoteeOffering />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/billing/sales"
+            element={
+              <ProtectedRoute>
+                <Sales />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/billing/donations"
+            element={
+              <ProtectedRoute>
+                <Donations />
               </ProtectedRoute>
             }
           />

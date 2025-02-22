@@ -87,6 +87,33 @@ function Navbar() {
                     data-bs-toggle='dropdown'
                     aria-expanded='false'
                   >
+                    Billing
+                  </button>
+                  <ul className='dropdown-menu'>
+                    <li>
+                      <Link className='dropdown-item' to='/billing/vazhipadu'>
+                        Vazhipadu
+                      </Link>
+                    </li>
+                    <li>
+                      <Link className='dropdown-item' to='/billing/sales'>
+                        Sales
+                      </Link>
+                    </li>
+                    <li>
+                      <Link className='dropdown-item' to='/billing/donations'>
+                        Donations
+                      </Link>
+                    </li>
+                  </ul>
+                </li>
+
+                <li className='nav-item dropdown'>
+                  <button
+                    className='nav-link dropdown-toggle border-0 bg-transparent'
+                    data-bs-toggle='dropdown'
+                    aria-expanded='false'
+                  >
                     Transactions
                   </button>
                   <ul className='dropdown-menu'>
