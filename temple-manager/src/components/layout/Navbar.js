@@ -13,6 +13,27 @@ function Navbar() {
     navigate('/');
   };
 
+  const transactionsMenu = [
+    {
+      label: 'Offerings',
+      path: '/transactions/offerings',
+      privilege: 'OFFERING_VIEW',
+    },
+    {
+      label: 'Expenses',
+      path: '/transactions/expenses',
+      privilege: 'EXPENSE_VIEW',
+    },
+  ];
+
+  const reportsMenu = [
+    {
+      label: 'Expenses Report',
+      path: '/reports/expenses',
+      privilege: 'EXPENSE_VIEW',
+    },
+  ];
+
   return (
     <nav className='navbar navbar-expand-lg navbar-dark bg-primary'>
       <div className='container'>
@@ -78,6 +99,11 @@ function Navbar() {
                         Vazhipadu
                       </Link>
                     </li>
+                    <li>
+                      <Link className='dropdown-item' to='/masters/expense-categories'>
+                        Expense Categories
+                      </Link>
+                    </li>
                   </ul>
                 </li>
 
@@ -136,6 +162,11 @@ function Navbar() {
                     <li>
                       <Link className='dropdown-item' to='/transactions/offerings'>
                         Offerings
+                      </Link>
+                    </li>
+                    <li>
+                      <Link className='dropdown-item' to='/transactions/expenses'>
+                        Expenses
                       </Link>
                     </li>
                   </ul>
@@ -207,6 +238,11 @@ function Navbar() {
                     <li>
                       <Link className='dropdown-item' to='/reports/revenue'>
                         Revenue Reports
+                      </Link>
+                    </li>
+                    <li>
+                      <Link className='dropdown-item' to='/reports/expenses'>
+                        Expenses Report
                       </Link>
                     </li>
                   </ul>

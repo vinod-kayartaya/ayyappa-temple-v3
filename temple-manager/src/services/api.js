@@ -873,3 +873,83 @@ export const fetchDevoteeOfferings = async (startDate, endDate) => {
     throw error;
   }
 };
+
+export const fetchExpensesReport = async (startDate, endDate, expenseType) => {
+  let url = `${process.env.REACT_APP_API_URL}/cash-expenses?startDate=${startDate}&endDate=${endDate}`;
+  
+  if (expenseType !== 'ALL') {
+    url += `&expenseType=${expenseType}`;
+  }
+
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${JSON.parse(localStorage.getItem('authState')).token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'Failed to fetch expenses report');
+  }
+
+  return response.json();
+};
+
+// Add these functions alongside other API functions
+export const fetchExpenseCategories = async () => {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/expense-categories`, {
+    headers: {
+      Authorization: `Bearer ${JSON.parse(localStorage.getItem('authState')).token}`,
+    },
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'Failed to fetch expense categories');
+  }
+  return response.json();
+};
+
+export const createExpenseCategory = async (categoryData) => {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/expense-categories`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${JSON.parse(localStorage.getItem('authState')).token}`,
+    },
+    body: JSON.stringify(categoryData),
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'Failed to create expense category');
+  }
+  return response.json();
+};
+
+export const updateExpenseCategory = async (id, categoryData) => {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/expense-categories/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${JSON.parse(localStorage.getItem('authState')).token}`,
+    },
+    body: JSON.stringify(categoryData),
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'Failed to update expense category');
+  }
+  return response.json();
+};
+
+export const deleteExpenseCategory = async (id) => {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/expense-categories/${id}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${JSON.parse(localStorage.getItem('authState')).token}`,
+    },
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'Failed to delete expense category');
+  }
+};

@@ -1,5 +1,10 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Navbar from './components/layout/Navbar';
 import Home from './pages/Home';
@@ -19,24 +24,27 @@ import OfferingsList from './components/offerings/OfferingsList';
 import Sales from './pages/billing/Sales';
 import Donations from './pages/billing/Donations';
 import DevoteeOffering from './components/offerings/DevoteeOffering';
+import ExpenseEntries from './pages/transactions/ExpenseEntries';
+import ExpensesReport from './pages/reports/ExpensesReport';
+import ExpenseCategories from './pages/masters/ExpenseCategories';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useSelector((state) => state.auth);
-  return isAuthenticated ? children : <Navigate to="/" />;
+  return isAuthenticated ? children : <Navigate to='/' />;
 };
 
 function App() {
   return (
     <Router>
-      <div className="App">
+      <div className='App'>
         <Navbar />
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/get-password-reset-link" element={<ResetPassword />} />
-          <Route path="/reset-password" element={<ResetPasswordForm />} />
-          <Route path="/about" element={<About />} />
+          <Route path='/' element={<Home />} />
+          <Route path='/get-password-reset-link' element={<ResetPassword />} />
+          <Route path='/reset-password' element={<ResetPasswordForm />} />
+          <Route path='/about' element={<About />} />
           <Route
-            path="/dashboard"
+            path='/dashboard'
             element={
               <ProtectedRoute>
                 <Dashboard />
@@ -45,7 +53,7 @@ function App() {
           />
           {/* Master Routes */}
           <Route
-            path="/masters/categories"
+            path='/masters/categories'
             element={
               <ProtectedRoute>
                 <Categories />
@@ -53,7 +61,7 @@ function App() {
             }
           />
           <Route
-            path="/masters/suppliers"
+            path='/masters/suppliers'
             element={
               <ProtectedRoute>
                 <Suppliers />
@@ -61,7 +69,7 @@ function App() {
             }
           />
           <Route
-            path="/masters/products"
+            path='/masters/products'
             element={
               <ProtectedRoute>
                 <Products />
@@ -69,7 +77,7 @@ function App() {
             }
           />
           <Route
-            path="/masters/vazhipadu"
+            path='/masters/vazhipadu'
             element={
               <ProtectedRoute>
                 <Vazhipadu />
@@ -77,7 +85,7 @@ function App() {
             }
           />
           <Route
-            path="/masters/deities"
+            path='/masters/deities'
             element={
               <ProtectedRoute>
                 <Deities />
@@ -85,7 +93,7 @@ function App() {
             }
           />
           <Route
-            path="/masters/offering-categories"
+            path='/masters/offering-categories'
             element={
               <ProtectedRoute>
                 <OfferingCategories />
@@ -93,7 +101,15 @@ function App() {
             }
           />
           <Route
-            path="/user/roles"
+            path='/masters/expense-categories'
+            element={
+              <ProtectedRoute>
+                <ExpenseCategories />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/user/roles'
             element={
               <ProtectedRoute>
                 <Role />
@@ -101,7 +117,7 @@ function App() {
             }
           />
           <Route
-            path="/user/users"
+            path='/user/users'
             element={
               <ProtectedRoute>
                 <User />
@@ -109,16 +125,24 @@ function App() {
             }
           />
           <Route
-            path="/transactions/offerings"
+            path='/transactions/offerings'
             element={
               <ProtectedRoute>
                 <OfferingsList />
               </ProtectedRoute>
             }
           />
+          <Route
+            path='/transactions/expenses'
+            element={
+              <ProtectedRoute>
+                <ExpenseEntries />
+              </ProtectedRoute>
+            }
+          />
           {/* Billing Routes */}
           <Route
-            path="/billing/vazhipadu"
+            path='/billing/vazhipadu'
             element={
               <ProtectedRoute>
                 <DevoteeOffering />
@@ -126,7 +150,7 @@ function App() {
             }
           />
           <Route
-            path="/billing/sales"
+            path='/billing/sales'
             element={
               <ProtectedRoute>
                 <Sales />
@@ -134,10 +158,18 @@ function App() {
             }
           />
           <Route
-            path="/billing/donations"
+            path='/billing/donations'
             element={
               <ProtectedRoute>
                 <Donations />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reports/expenses"
+            element={
+              <ProtectedRoute>
+                <ExpensesReport />
               </ProtectedRoute>
             }
           />

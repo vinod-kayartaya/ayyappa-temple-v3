@@ -1,3 +1,5 @@
+CREATE DATABASE  IF NOT EXISTS `templedb` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `templedb`;
 -- MySQL dump 10.13  Distrib 8.0.36, for macos14 (x86_64)
 --
 -- Host: 127.0.0.1    Database: templedb
@@ -14,6 +16,48 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `cash_expenses`
+--
+
+DROP TABLE IF EXISTS `cash_expenses`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `cash_expenses` (
+  `id` varchar(36) NOT NULL,
+  `voucher_no` int NOT NULL,
+  `voucher_date` date NOT NULL,
+  `paid_to` varchar(200) NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `purpose` varchar(500) NOT NULL,
+  `approved_by` int DEFAULT NULL,
+  `created_by` varchar(50) NOT NULL,
+  `created_at` timestamp NOT NULL,
+  `last_updated_by` varchar(50) DEFAULT NULL,
+  `last_updated_at` timestamp NULL DEFAULT NULL,
+  `expense_type` varchar(10) NOT NULL DEFAULT 'VOUCHER',
+  `category_id` varchar(36) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `voucher_no` (`voucher_no`),
+  KEY `fk_cash_vouchers_approved_by` (`approved_by`),
+  KEY `idx_expense_type` (`expense_type`),
+  KEY `fk_cash_expenses_category` (`category_id`),
+  CONSTRAINT `fk_cash_expenses_category` FOREIGN KEY (`category_id`) REFERENCES `expense_categories` (`id`),
+  CONSTRAINT `fk_cash_vouchers_approved_by` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`),
+  CONSTRAINT `cash_expenses_chk_1` CHECK ((`expense_type` in (_utf8mb4'VOUCHER',_utf8mb4'RECEIPT')))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `cash_expenses`
+--
+
+LOCK TABLES `cash_expenses` WRITE;
+/*!40000 ALTER TABLE `cash_expenses` DISABLE KEYS */;
+INSERT INTO `cash_expenses` VALUES ('5964ff16-5a04-4379-8bcf-e70e9ed23674',296,'2025-02-26','Sushellamma',500.00,'Cleaning',1,'vinod','2025-02-26 20:31:54',NULL,NULL,'VOUCHER','3e41b14a-f4d2-11ef-9147-0242ac120002'),('5a8f58c4-11c8-4d73-ac8d-81a6807f0699',295,'2025-02-26','Sharadamma',500.00,'cleaning work',1,'vinod','2025-02-26 20:28:54','vinod','2025-02-26 20:29:17','VOUCHER','3e41b14a-f4d2-11ef-9147-0242ac120002'),('6f81ce6c-50fc-4147-b254-72057471cd6c',301,'2025-02-27','Aravinda',540.00,'Flowers',NULL,'vinod','2025-02-27 09:48:52','vinod','2025-02-27 09:49:02','VOUCHER','3e41b14a-f4d2-11ef-9147-0242ac120002'),('73856012-a604-4500-9ca7-4269120e455a',9982716,'2025-02-27','BESCOM',980.00,'Electricity bill',1,'vinod','2025-02-27 09:07:33','vinod','2025-02-27 12:23:21','RECEIPT','ec626c99-d9a6-481f-9fd1-ad8e31ca92bc'),('98f56215-53e6-4163-ab9b-483fda4d9668',293,'2025-02-26','Harish',290.00,'Auto rickshaw fare from bus stand',1,'vinod','2025-02-26 20:22:13','vinod','2025-02-26 20:27:07','VOUCHER','3e41b14a-f4d2-11ef-9147-0242ac120002'),('9ca73cbf-30f2-4256-bc95-1da9972e1a49',292,'2025-02-26','Kishore',3000.00,'Towards flowers (20 kg)',40,'vinod','2025-02-26 13:10:20','vinod','2025-02-26 20:21:32','VOUCHER','3e41b14a-f4d2-11ef-9147-0242ac120002'),('b415cad8-6f4e-4346-8bdf-b016d3f65c1b',300,'2025-02-27','Umesh',220.00,'Auto fare from Majestic busstand',1,'vinod','2025-02-27 09:07:09','vinod','2025-02-27 09:48:03','VOUCHER','3e41b14a-f4d2-11ef-9147-0242ac120002'),('ccfc7209-ba2e-4501-b1bd-dbf6a4eff56d',827173,'2025-02-27','Bangalore One',2909.00,'Water bill paid',1,'vinod','2025-02-27 09:24:08',NULL,NULL,'RECEIPT','3e41b14a-f4d2-11ef-9147-0242ac120002');
+/*!40000 ALTER TABLE `cash_expenses` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `categories`
@@ -134,6 +178,36 @@ LOCK TABLES `devotee_offerings` WRITE;
 /*!40000 ALTER TABLE `devotee_offerings` DISABLE KEYS */;
 INSERT INTO `devotee_offerings` VALUES (1,'2025-02-18','2025-02-18','vinod','2025-02-18 11:20:30',NULL,NULL),(2,'2025-02-18','2025-02-18','vinod','2025-02-18 11:26:38',NULL,NULL),(3,'2025-02-18','2025-02-18','vinod','2025-02-18 15:25:00',NULL,NULL),(4,'2025-02-18','2025-02-18','vinod','2025-02-18 11:23:18',NULL,NULL),(5,'2025-02-22','2025-02-22','vinod','2025-02-22 07:52:41',NULL,NULL),(6,'2025-02-18','2025-02-20','vinod','2025-02-18 15:37:06',NULL,NULL),(7,'2025-02-18','2025-02-18','vinod','2025-02-18 15:27:26',NULL,NULL),(8,'2025-02-18','2025-02-18','vinod','2025-02-18 15:25:07',NULL,NULL),(9,'2025-02-18','2025-02-18','vinod','2025-02-18 11:24:59',NULL,NULL),(10,'2025-02-18','2025-02-18','vinod','2025-02-18 11:25:07',NULL,NULL),(11,'2025-02-18','2025-02-18','vinod','2025-02-18 11:08:25',NULL,NULL),(12,'2025-02-18','2025-02-18','vinod','2025-02-18 11:24:10',NULL,NULL),(13,'2025-02-22','2025-02-22','vinod','2025-02-22 07:55:18',NULL,NULL),(16,'2025-02-22','2025-02-22','vinod','2025-02-22 08:09:59',NULL,NULL),(17,'2025-02-22','2025-02-22','vinod','2025-02-22 08:10:22',NULL,NULL),(18,'2025-02-22','2025-02-22','vinod','2025-02-22 08:14:29',NULL,NULL),(19,'2025-02-22','2025-02-22','vinod','2025-02-22 08:20:11',NULL,NULL);
 /*!40000 ALTER TABLE `devotee_offerings` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `expense_categories`
+--
+
+DROP TABLE IF EXISTS `expense_categories`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `expense_categories` (
+  `id` varchar(36) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `description` text,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_by` varchar(50) NOT NULL,
+  `last_updated_at` timestamp NULL DEFAULT NULL,
+  `last_updated_by` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `expense_categories`
+--
+
+LOCK TABLES `expense_categories` WRITE;
+/*!40000 ALTER TABLE `expense_categories` DISABLE KEYS */;
+INSERT INTO `expense_categories` VALUES ('3e41b14a-f4d2-11ef-9147-0242ac120002','Others','Miscellaneous expenses','2025-02-27 06:15:29','system','2025-02-27 11:59:59','vinod'),('ec626c99-d9a6-481f-9fd1-ad8e31ca92bc','Electricity','Electricity bill payments','2025-02-27 12:01:28','vinod',NULL,NULL);
+/*!40000 ALTER TABLE `expense_categories` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -450,4 +524,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-02-22 10:20:16
+-- Dump completed on 2025-02-28  8:17:43

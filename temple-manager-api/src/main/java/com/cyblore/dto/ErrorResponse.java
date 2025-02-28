@@ -1,11 +1,14 @@
 package com.cyblore.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
 public class ErrorResponse {
     private String message;
     private String code;
+
+    public ErrorResponse(String message, String code) {
+        this.message = message;
+        this.code = code;
+    }
 } 

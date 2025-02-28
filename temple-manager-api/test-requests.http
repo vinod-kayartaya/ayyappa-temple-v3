@@ -563,3 +563,49 @@ Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
 {"transactionDate":"2025-02-18","offeringDate":"2025-02-18","items":[{"devoteeMobileNumber":"9880098800","vazhipaduId":"fb93fc50-ba36-4f99-b8b2-1c2abf8972dc","devoteeName":"Rajesh","devoteeNakshtram":"Ashwini","deityName":"Ayyappa Swamy","nos":1,"amount":201}]}
+
+
+### Get all expense categories
+GET /api/expense-categories
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Get category by ID
+GET http://localhost:8080/api/expense-categories/{{categoryId}}
+Authorization: Bearer {{authToken}}
+
+### Create new category
+POST http://localhost:8080/api/expense-categories
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "name": "Temple Maintenance",
+    "description": "Expenses related to temple maintenance and repairs"
+}
+
+### Update category
+PUT http://localhost:8080/api/expense-categories/{{categoryId}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "name": "Temple Maintenance",
+    "description": "Updated description for temple maintenance expenses"
+}
+
+### Create expense with category
+POST http://localhost:8080/api/cash-expenses
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "voucherNo": 294,
+    "voucherDate": "2024-02-26",
+    "paidTo": "Kishore Kumar",
+    "amount": 3000.00,
+    "purpose": "Temple Flowers (20 kg)",
+    "expenseType": "VOUCHER",
+    "approvedBy": 40,
+    "categoryId": "{{categoryId}}"
+}
