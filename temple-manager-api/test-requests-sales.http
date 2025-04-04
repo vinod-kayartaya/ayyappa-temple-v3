@@ -1,0 +1,213 @@
+@auth_token = eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2aW5vZCIsImlhdCI6MTc0MjMwNjYzNywiZXhwIjoxNzQ0ODk4NjM3fQ.Vhsy6vbJlgmUGiCTQzjoykmSLk5S9zujmBUFEgUO0_w_lYwagPFpVfbdZsuLxXVYLZeg7HIOsHiPIIpvdcMfDA
+
+### Get all sales
+GET http://localhost:8080/api/sales
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+# Example response:
+# {
+#   "content": [
+#     {
+#       "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+#       "customerName": "John Doe",
+#       "customerMobile": "9876543210",
+#       "saleDate": "2025-03-18T14:30:00",
+#       "totalAmount": 299.00,
+#       "createdBy": "vinod",
+#       "createdAt": "2025-03-18T14:35:12",
+#       "items": [
+#         {
+#           "id": "a1b2c3d4-e5f6-4321-abcd-1234567890ab",
+#           "productId": "264f3068-2067-4346-8684-67acd33b355b",
+#           "productCode": 93,
+#           "productName": "Rice prasadam",
+#           "quantity": 2,
+#           "unitPrice": 100.00,
+#           "totalPrice": 200.00
+#         },
+#         {
+#           "id": "b2c3d4e5-f6a7-5432-bcde-2345678901bc",
+#           "productId": "54046bf3-10e2-45f3-afa0-1416fc4214bd",
+#           "productCode": 92,
+#           "productName": "Vasu Agarabatti",
+#           "quantity": 1,
+#           "unitPrice": 99.00,
+#           "totalPrice": 99.00
+#         }
+#       ]
+#     }
+#   ],
+#   "pageable": { ... },
+#   "totalElements": 25,
+#   "totalPages": 3,
+#   ...
+# }
+
+### Get sales by date range (using date only format)
+GET http://localhost:8080/api/sales?startDate=2025-03-01&endDate=2025-03-18
+Content-Type: application/json
+Authorization: Basic YWRtaW46YWRtaW4=
+
+# This now accepts dates in YYYY-MM-DD format without time component
+
+### Get sales by date range (using previous datetime format - still works)
+GET http://localhost:8080/api/sales?startDate=2025-01-01T00:00:00&endDate=2025-12-31T23:59:59
+Content-Type: application/json
+Authorization: Basic YWRtaW46YWRtaW4=
+
+### Get sales by customer name
+GET http://localhost:8080/api/sales?customerName=John
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+### Get sales by customer mobile
+GET http://localhost:8080/api/sales?customerMobile=9731424784
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+### Get sale by ID
+GET http://localhost:8080/api/sales/cb777636-ff34-43ca-adee-5c06c764cdb4
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+# Example response:
+# {
+#   "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+#   "customerName": "John Doe",
+#   "customerMobile": "9876543210",
+#   "saleDate": "2025-03-18T14:30:00",
+#   "totalAmount": 299.00,
+#   "createdBy": "vinod",
+#   "createdAt": "2025-03-18T14:35:12",
+#   "items": [
+#     {
+#       "id": "a1b2c3d4-e5f6-4321-abcd-1234567890ab",
+#       "productId": "264f3068-2067-4346-8684-67acd33b355b",
+#       "productCode": 93,
+#       "productName": "Rice prasadam",
+#       "quantity": 2,
+#       "unitPrice": 100.00,
+#       "totalPrice": 200.00
+#     },
+#     {
+#       "id": "b2c3d4e5-f6a7-5432-bcde-2345678901bc",
+#       "productId": "54046bf3-10e2-45f3-afa0-1416fc4214bd",
+#       "productCode": 92,
+#       "productName": "Vasu Agarabatti",
+#       "quantity": 1,
+#       "unitPrice": 99.00,
+#       "totalPrice": 99.00
+#     }
+#   ]
+# }
+
+### Create a new sale
+POST http://localhost:8080/api/sales
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "customerName": "John Doe",
+  "customerMobile": "9876543210",
+  "saleDate": "2025-03-18T14:30:00",
+  "items": [
+    {
+      "productId": "264f3068-2067-4346-8684-67acd33b355b",
+      "quantity": 2,
+      "unitPrice": 100.00
+    },
+    {
+      "productId": "54046bf3-10e2-45f3-afa0-1416fc4214bd",
+      "quantity": 1
+    }
+  ]
+}
+
+# Example response:
+# {
+#   "id": "e8f9a0b1-c2d3-45e6-789f-012345678901",
+#   "customerName": "John Doe",
+#   "customerMobile": "9876543210",
+#   "saleDate": "2025-03-18T14:30:00",
+#   "totalAmount": 299.00,
+#   "createdBy": "vinod",
+#   "createdAt": "2025-03-18T14:40:22",
+#   "items": [
+#     {
+#       "id": "d4e5f6a7-b8c9-5678-defg-3456789012cd",
+#       "productId": "264f3068-2067-4346-8684-67acd33b355b",
+#       "productCode": 93,
+#       "productName": "Rice prasadam",
+#       "quantity": 2,
+#       "unitPrice": 100.00,
+#       "totalPrice": 200.00
+#     },
+#     {
+#       "id": "e5f6a7b8-c9d0-6789-efgh-4567890123de",
+#       "productId": "54046bf3-10e2-45f3-afa0-1416fc4214bd",
+#       "productCode": 92,
+#       "productName": "Vasu Agarabatti",
+#       "quantity": 1,
+#       "unitPrice": 99.00,
+#       "totalPrice": 99.00
+#     }
+#   ]
+# }
+
+### Update a sale
+PUT http://localhost:8080/api/sales/f47ac10b-58cc-4372-a567-0e02b2c3d479
+Content-Type: application/json
+Authorization: Basic YWRtaW46YWRtaW4=
+
+{
+  "customerName": "John Doe",
+  "customerMobile": "9876543210",
+  "saleDate": "2025-03-18T14:30:00",
+  "items": [
+    {
+      "productId": "264f3068-2067-4346-8684-67acd33b355b",
+      "quantity": 3,
+      "unitPrice": 100.00
+    }
+  ]
+}
+
+### Delete a sale
+DELETE http://localhost:8080/api/sales/f47ac10b-58cc-4372-a567-0e02b2c3d479
+Content-Type: application/json
+Authorization: Basic YWRtaW46YWRtaW4=
+
+### Get product by code
+GET http://localhost:8080/api/products/code/93
+Content-Type: application/json
+Authorization: Basic YWRtaW46YWRtaW4=
+
+# Example response:
+# {
+#   "id": "264f3068-2067-4346-8684-67acd33b355b",
+#   "code": 93,
+#   "name": "Rice prasadam",
+#   "unit": "1 pack",
+#   "supplierId": "61a27029-9335-4cc4-8950-8ac0d14cd7d6",
+#   "supplierName": "SLV",
+#   "categoryId": "d1ee1e31-40ac-4a28-803f-19c0a4eb91bf",
+#   "categoryName": "Prasadam",
+#   "price": 100.00,
+#   "costPrice": 60.00,
+#   "commissionPercentage": 60.00,
+#   "taxPercentage": null,
+#   "astPercentage": null,
+#   "openingStock": 50,
+#   "issued": 0,
+#   "received": 0,
+#   "damaged": 0,
+#   "salesReturned": 0,
+#   "purchasesReturned": 0,
+#   "blocked": null,
+#   "quantityInStock": 0,
+#   "createdBy": "vinod",
+#   "createdAt": "2025-03-18T17:09:30",
+#   "lastUpdatedBy": "vinod",
+#   "lastUpdatedAt": "2025-03-18T17:24:36"
+# } 

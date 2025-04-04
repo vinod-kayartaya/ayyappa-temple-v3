@@ -1,0 +1,29 @@
+POST http://localhost:5000/print-bill HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+
+{
+    "items": [
+        {
+            "name": "Archana",
+            "price": 51.00
+        },
+        {
+            "name": "Special Pooja",
+            "price": 101.00
+        },
+        {
+            "name": "Prasadam",
+            "price": 25.00
+        },
+        {
+            "name": "Donation",
+            "price": 1001.00
+        },
+        {
+            "name": "Ganahoma",
+            "price": 1500.00
+        }
+    ]
+}
+image.png

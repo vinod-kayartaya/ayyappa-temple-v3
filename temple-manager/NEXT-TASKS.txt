@@ -1,0 +1,10 @@
+When a product is selected, the current stock to be shown
+Quantity must be less than or equal to the current stock
+Stock to be updated after the sale is recorded.
+
+
+Modify the product to have SGST and CGST (instead of tax%)
+For sales, price + CSGT + SGST to be used (2 new columns)
+Tax is calculated only if it is more than 0%
+
+Display all tax information

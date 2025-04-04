@@ -558,6 +558,24 @@ export const deleteVazhipadu = async (id) => {
   }
 };
 
+export const fetchVazhipaduById = async (id) => {
+  try {
+    const response = await fetch(`${BASE_URL}/vazhipadus/${id}`, {
+      headers: {
+        Authorization: `Bearer ${JSON.parse(localStorage.getItem('authState')).token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch vazhipadu details');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
 // Roles API
 export const fetchRoles = async () => {
   try {
@@ -951,5 +969,356 @@ export const deleteExpenseCategory = async (id) => {
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.message || 'Failed to delete expense category');
+  }
+};
+
+// Donation Categories API
+export const fetchDonationCategories = async () => {
+  try {
+    const response = await fetch(`${BASE_URL}/donation-categories`, {
+      headers: {
+        Authorization: `Bearer ${
+          localStorage.getItem('authState')
+            ? JSON.parse(localStorage.getItem('authState')).token
+            : ''
+        }`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch donation categories');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const createDonationCategory = async (categoryData) => {
+  try {
+    const response = await fetch(`${BASE_URL}/donation-categories`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${
+          JSON.parse(localStorage.getItem('authState')).token
+        }`,
+      },
+      body: JSON.stringify(categoryData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create donation category');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateDonationCategory = async (id, categoryData) => {
+  try {
+    const response = await fetch(`${BASE_URL}/donation-categories/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${
+          JSON.parse(localStorage.getItem('authState')).token
+        }`,
+      },
+      body: JSON.stringify(categoryData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update donation category');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteDonationCategory = async (id) => {
+  try {
+    const response = await fetch(`${BASE_URL}/donation-categories/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${
+          JSON.parse(localStorage.getItem('authState')).token
+        }`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete donation category');
+    }
+
+    return true;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Donations API
+export const fetchDonations = async ({ page = 0, size = 10, startDate, endDate }) => {
+  try {
+    let url = `${BASE_URL}/donations?page=${page}&size=${size}`;
+    if (startDate && endDate) {
+      url += `&startDate=${startDate}&endDate=${endDate}`;
+    }
+
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${
+          localStorage.getItem('authState')
+            ? JSON.parse(localStorage.getItem('authState')).token
+            : ''
+        }`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch donations');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const createDonation = async (donationData) => {
+  try {
+    const response = await fetch(`${BASE_URL}/donations`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${
+          JSON.parse(localStorage.getItem('authState')).token
+        }`,
+      },
+      body: JSON.stringify(donationData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create donation');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateDonation = async (id, donationData) => {
+  try {
+    const response = await fetch(`${BASE_URL}/donations/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${
+          JSON.parse(localStorage.getItem('authState')).token
+        }`,
+      },
+      body: JSON.stringify(donationData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update donation');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteDonation = async (id) => {
+  try {
+    const response = await fetch(`${BASE_URL}/donations/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${
+          JSON.parse(localStorage.getItem('authState')).token
+        }`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete donation');
+    }
+
+    return true;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchProductByCode = async (code) => {
+  try {
+    const response = await fetch(`${BASE_URL}/products/code/${code}`, {
+      headers: {
+        Authorization: `Bearer ${
+          localStorage.getItem('authState')
+            ? JSON.parse(localStorage.getItem('authState')).token
+            : ''
+        }`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch product by code');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const createSale = async (saleData) => {
+  try {
+    const response = await fetch(`${BASE_URL}/sales`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${
+          JSON.parse(localStorage.getItem('authState')).token
+        }`,
+      },
+      body: JSON.stringify(saleData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create sale');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchSales = async (params = {}) => {
+  try {
+    const { page = 0, size = 10, startDate, endDate } = params;
+    let url = `${BASE_URL}/sales?page=${page}&size=${size}`;
+    
+    if (startDate && endDate) {
+      url += `&startDate=${startDate}&endDate=${endDate}`;
+    }
+    
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${
+          localStorage.getItem('authState')
+            ? JSON.parse(localStorage.getItem('authState')).token
+            : ''
+        }`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch sales');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateSale = async (id, saleData) => {
+  try {
+    const response = await fetch(`${BASE_URL}/sales/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${
+          JSON.parse(localStorage.getItem('authState')).token
+        }`,
+      },
+      body: JSON.stringify(saleData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update sale');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteSale = async (id) => {
+  try {
+    const response = await fetch(`${BASE_URL}/sales/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${
+          JSON.parse(localStorage.getItem('authState')).token
+        }`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete sale');
+    }
+
+    return true;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateDevoteeOffering = async (id, offeringData) => {
+  try {
+    const response = await fetch(`${BASE_URL}/devotee-offerings/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${
+          JSON.parse(localStorage.getItem('authState')).token
+        }`,
+      },
+      body: JSON.stringify(offeringData),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to update offering');
+    }
+
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const printBill = async (billData) => {
+  try {
+    const response = await fetch('http://localhost:5000/print-bill', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${
+          JSON.parse(localStorage.getItem('authState')).token
+        }`,
+      },
+      body: JSON.stringify(billData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to print bill');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
   }
 };

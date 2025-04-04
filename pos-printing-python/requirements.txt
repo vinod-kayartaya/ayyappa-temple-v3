@@ -1,0 +1,5 @@
+flask==3.0.2
+pywin32==310
+waitress==2.1.2
+setuptools==78.1.0
+flask-cors==4.0.0

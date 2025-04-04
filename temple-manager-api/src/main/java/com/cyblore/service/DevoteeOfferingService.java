@@ -17,6 +17,7 @@ import com.cyblore.dto.DevoteeNameNakshtramDto;
 import java.time.LocalDate;
 import java.util.stream.Collectors;
 import com.cyblore.dto.DevoteeOfferingResponseDto;
+import java.math.BigDecimal;
 
 @Service
 public class DevoteeOfferingService {
@@ -30,7 +31,7 @@ public class DevoteeOfferingService {
     }
 
     @Transactional
-    public DevoteeOffering createOffering(DevoteeOfferingRequestDto request, Principal principal) {
+    public DevoteeOfferingResponseDto createOffering(DevoteeOfferingRequestDto request, Principal principal) {
         DevoteeOffering offering = new DevoteeOffering();
         offering.setTransactionDate(request.getTransactionDate());
         offering.setOfferingDate(request.getOfferingDate());
@@ -56,7 +57,43 @@ public class DevoteeOfferingService {
             offering.getItems().add(offeringItem);
         });
 
-        return repository.save(offering);
+        return mapToDto(repository.save(offering));
+    }
+
+    @Transactional
+    public DevoteeOfferingResponseDto updateOffering(Long id, DevoteeOfferingRequestDto request, Principal principal) {
+        DevoteeOffering offering = repository.findByIdWithItems(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Offering not found"));
+
+        offering.setTransactionDate(request.getTransactionDate());
+        offering.setOfferingDate(request.getOfferingDate());
+        offering.setLastUpdatedBy(principal.getName());
+        offering.setLastUpdatedAt(LocalDateTime.now());
+
+        // Clear existing items
+        offering.getItems().clear();
+
+        // Add new items
+        request.getItems().forEach(item -> {
+            DevoteeOfferingItem offeringItem = new DevoteeOfferingItem();
+            offeringItem.setId(UUID.randomUUID().toString());
+            offeringItem.setDevoteeOffering(offering);
+
+            Vazhipadu vazhipadu = vazhipaduRepository.findById(item.getVazhipaduId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Vazhipadu not found"));
+
+            offeringItem.setVazhipadu(vazhipadu);
+            offeringItem.setDevoteeName(item.getDevoteeName());
+            offeringItem.setDevoteeMobileNumber(item.getDevoteeMobileNumber());
+            offeringItem.setDevoteeNakshtram(item.getDevoteeNakshtram());
+            offeringItem.setDeityName(item.getDeityName());
+            offeringItem.setNos(item.getNos());
+            offeringItem.setAmount(item.getAmount());
+
+            offering.getItems().add(offeringItem);
+        });
+
+        return mapToDto(repository.save(offering));
     }
 
     public DevoteeOffering getOffering(Long id) {
@@ -76,8 +113,11 @@ public class DevoteeOfferingService {
         return repository.findUniqueDevoteeNamesByPhoneNumber(phoneNumber);
     }
 
-    public List<DevoteeOffering> getAllOfferings(LocalDate startDate, LocalDate endDate) {
-        return repository.findAllWithItemsAndVazhipaduByDateRange(startDate, endDate);
+    public List<DevoteeOfferingResponseDto> getAllOfferings(LocalDate startDate, LocalDate endDate) {
+        return repository.findAllWithItemsAndVazhipaduByDateRange(startDate, endDate)
+                .stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
     }
 
     public List<DevoteeOfferingResponseDto> getDevoteeOfferings(LocalDateTime startDate, LocalDateTime endDate) {
@@ -95,6 +135,7 @@ public class DevoteeOfferingService {
     private DevoteeOfferingResponseDto mapToDto(DevoteeOffering offering) {
         DevoteeOfferingResponseDto dto = new DevoteeOfferingResponseDto();
         dto.setId(offering.getId());
+        dto.setBillNumber(String.format("%06d", offering.getId()));
         dto.setTransactionDate(offering.getTransactionDate());
         dto.setOfferingDate(offering.getOfferingDate());
         dto.setCreatedBy(offering.getCreatedBy());
@@ -102,13 +143,14 @@ public class DevoteeOfferingService {
         dto.setLastUpdatedBy(offering.getLastUpdatedBy());
         dto.setLastUpdatedAt(offering.getLastUpdatedAt());
 
-        dto.setItems(offering.getItems().stream()
+        List<DevoteeOfferingResponseDto.DevoteeOfferingItemResponseDto> itemDtos = offering.getItems().stream()
                 .map(item -> {
                     DevoteeOfferingResponseDto.DevoteeOfferingItemResponseDto itemDto = new DevoteeOfferingResponseDto.DevoteeOfferingItemResponseDto();
                     itemDto.setId(item.getId());
                     itemDto.setDevoteeMobileNumber(item.getDevoteeMobileNumber());
                     itemDto.setVazhipaduId(item.getVazhipadu().getId());
                     itemDto.setVazhipaduName(item.getVazhipadu().getVazhipaduName());
+                    itemDto.setVazhipaduCode(item.getVazhipadu().getCode());
                     itemDto.setDevoteeName(item.getDevoteeName());
                     itemDto.setDevoteeNakshtram(item.getDevoteeNakshtram());
                     itemDto.setDeityName(item.getDeityName());
@@ -116,7 +158,14 @@ public class DevoteeOfferingService {
                     itemDto.setAmount(item.getAmount());
                     return itemDto;
                 })
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
+
+        dto.setItems(itemDtos);
+        
+        BigDecimal total = itemDtos.stream()
+                .map(item -> item.getAmount().multiply(new BigDecimal(item.getNos())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        dto.setTotalAmount(total);
 
         return dto;
     }

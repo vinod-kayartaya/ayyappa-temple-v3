@@ -10,7 +10,7 @@ Content-Type: application/json
 
 {
     "username": "vinod",
-    "password": "Welcome#123"
+    "password": "Don4Vinod$"
 }
 
 > {% client.global.set("auth_token", response.body.token); %}
@@ -608,4 +608,25 @@ Content-Type: application/json
     "expenseType": "VOUCHER",
     "approvedBy": 40,
     "categoryId": "{{categoryId}}"
+}
+
+### 
+GET /api/donation-categories
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Get donation category by ID
+GET /api/donation-categories/{{donation_category_id}}
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+
+### Create new donation category
+POST /api/donation-categories
+Host: {{host}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+    "name": "Monthly Donation",
+    "description": "Monthly donation for temple maintenance"
 }

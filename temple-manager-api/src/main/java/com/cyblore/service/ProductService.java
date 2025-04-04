@@ -42,6 +42,12 @@ public class ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
     }
 
+    public ProductResponseDto getProductByCode(Integer code) {
+        return repository.findByCode(code)
+                .map(this::mapToDto)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with code: " + code));
+    }
+
     @Transactional
     public ProductResponseDto createProduct(ProductRequestDto request, Principal principal) {
         if (repository.existsByCode(request.getCode())) {

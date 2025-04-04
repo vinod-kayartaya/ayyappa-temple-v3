@@ -79,7 +79,7 @@ public class VazhipaduController {
     @GetMapping("/by-code/{code}")
     public ResponseEntity<?> getVazhipaduByCode(@PathVariable Integer code) {
         try {
-            Vazhipadu vazhipadu = service.getVazhipaduByCode(code);
+            VazhipaduResponseDto vazhipadu = service.getVazhipaduByCode(code);
             return ResponseEntity.ok(vazhipadu);
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(404)

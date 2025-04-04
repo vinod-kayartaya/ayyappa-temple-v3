@@ -7,6 +7,7 @@ import com.cyblore.exceptions.ResourceNotFoundException;
 import com.cyblore.dto.ErrorResponse;
 import com.cyblore.dto.SuccessResponse;
 import com.cyblore.dto.DevoteeNameNakshtramDto;
+import com.cyblore.dto.DevoteeOfferingResponseDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
@@ -26,7 +27,7 @@ public class DevoteeOfferingController {
     @PostMapping
     public ResponseEntity<?> createOffering(@RequestBody DevoteeOfferingRequestDto request, Principal principal) {
         try {
-            DevoteeOffering offering = service.createOffering(request, principal);
+            DevoteeOfferingResponseDto offering = service.createOffering(request, principal);
             return ResponseEntity.ok(offering);
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(404)
@@ -72,7 +73,7 @@ public class DevoteeOfferingController {
     }
 
     @GetMapping
-    public ResponseEntity<List<DevoteeOffering>> getAllOfferings(
+    public ResponseEntity<List<DevoteeOfferingResponseDto>> getAllOfferings(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
@@ -81,5 +82,22 @@ public class DevoteeOfferingController {
         endDate = endDate != null ? endDate : today;
 
         return ResponseEntity.ok(service.getAllOfferings(startDate, endDate));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateOffering(
+            @PathVariable Long id,
+            @RequestBody DevoteeOfferingRequestDto request,
+            Principal principal) {
+        try {
+            DevoteeOfferingResponseDto offering = service.updateOffering(id, request, principal);
+            return ResponseEntity.ok(offering);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404)
+                    .body(new ErrorResponse(e.getMessage(), "OFF003"));
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(new ErrorResponse("Failed to update offering", "OFF004"));
+        }
     }
 }

@@ -16,17 +16,20 @@ import Products from './pages/masters/Products';
 import Vazhipadu from './pages/masters/Vazhipadu';
 import Deities from './pages/masters/Deities';
 import OfferingCategories from './pages/masters/OfferingCategories';
+import DonationCategories from './pages/masters/DonationCategories';
 import Role from './pages/user/Role';
 import User from './pages/user/User';
 import ResetPassword from './components/auth/ResetPassword';
 import ResetPasswordForm from './components/auth/ResetPasswordForm';
-import OfferingsList from './components/offerings/OfferingsList';
 import Sales from './pages/billing/Sales';
-import Donations from './pages/billing/Donations';
+import BillingDonations from './pages/billing/Donations';
 import DevoteeOffering from './components/offerings/DevoteeOffering';
 import ExpenseEntries from './pages/transactions/ExpenseEntries';
 import ExpensesReport from './pages/reports/ExpensesReport';
 import ExpenseCategories from './pages/masters/ExpenseCategories';
+import Donations from './pages/transactions/Donations';
+import TransactionSales from './pages/transactions/Sales';
+import Offerings from './pages/transactions/Offerings';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useSelector((state) => state.auth);
@@ -109,6 +112,14 @@ function App() {
             }
           />
           <Route
+            path='/masters/donation-categories'
+            element={
+              <ProtectedRoute>
+                <DonationCategories />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path='/user/roles'
             element={
               <ProtectedRoute>
@@ -128,7 +139,7 @@ function App() {
             path='/transactions/offerings'
             element={
               <ProtectedRoute>
-                <OfferingsList />
+                <Offerings />
               </ProtectedRoute>
             }
           />
@@ -137,6 +148,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <ExpenseEntries />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/transactions/donations'
+            element={
+              <ProtectedRoute>
+                <Donations />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/transactions/sales'
+            element={
+              <ProtectedRoute>
+                <TransactionSales />
               </ProtectedRoute>
             }
           />
@@ -161,7 +188,7 @@ function App() {
             path='/billing/donations'
             element={
               <ProtectedRoute>
-                <Donations />
+                <BillingDonations />
               </ProtectedRoute>
             }
           />

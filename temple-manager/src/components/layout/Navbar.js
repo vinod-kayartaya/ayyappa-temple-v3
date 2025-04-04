@@ -13,27 +13,6 @@ function Navbar() {
     navigate('/');
   };
 
-  const transactionsMenu = [
-    {
-      label: 'Offerings',
-      path: '/transactions/offerings',
-      privilege: 'OFFERING_VIEW',
-    },
-    {
-      label: 'Expenses',
-      path: '/transactions/expenses',
-      privilege: 'EXPENSE_VIEW',
-    },
-  ];
-
-  const reportsMenu = [
-    {
-      label: 'Expenses Report',
-      path: '/reports/expenses',
-      privilege: 'EXPENSE_VIEW',
-    },
-  ];
-
   return (
     <nav className='navbar navbar-expand-lg navbar-dark bg-primary'>
       <div className='container'>
@@ -104,6 +83,11 @@ function Navbar() {
                         Expense Categories
                       </Link>
                     </li>
+                    <li>
+                      <Link className='dropdown-item' to='/masters/donation-categories'>
+                        Donation Categories
+                      </Link>
+                    </li>
                   </ul>
                 </li>
 
@@ -157,6 +141,14 @@ function Navbar() {
                         to='/transactions/donations'
                       >
                         Donations
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        className='dropdown-item'
+                        to='/transactions/sales'
+                      >
+                        Sales
                       </Link>
                     </li>
                     <li>

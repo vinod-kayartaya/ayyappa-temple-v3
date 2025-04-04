@@ -35,6 +35,16 @@ public class ProductController {
         }
     }
 
+    @GetMapping("/code/{code}")
+    public ResponseEntity<?> getProductByCode(@PathVariable Integer code) {
+        try {
+            return ResponseEntity.ok(service.getProductByCode(code));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404)
+                    .body(new ErrorResponse(e.getMessage(), "PRD007"));
+        }
+    }
+
     @PostMapping
     public ResponseEntity<?> createProduct(@RequestBody ProductRequestDto request, Principal principal) {
         try {

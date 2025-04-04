@@ -50,13 +50,13 @@ function OfferingsList() {
     const filtered = offerings.filter(offering => {
       const searchLower = searchTerm.toLowerCase();
       const hasMatchingName = offering.items.some(item => 
-        item.devoteeName.toLowerCase().includes(searchLower)
+        item.devoteeName && item.devoteeName.toLowerCase().includes(searchLower)
       );
       const hasMatchingNakshatra = offering.items.some(item => 
-        item.devoteeNakshtram.toLowerCase().includes(searchLower)
+        item.devoteeNakshtram && item.devoteeNakshtram.toLowerCase().includes(searchLower)
       );
       const hasMatchingPhone = offering.items.some(item => 
-        item.devoteeMobileNumber.includes(searchLower)
+        item.devoteeMobileNumber && item.devoteeMobileNumber.includes(searchLower)
       );
       const matchesBillNumber = formatBillNumber(offering.id).includes(searchLower);
       
@@ -148,15 +148,15 @@ function OfferingsList() {
                           <small>Bill #: {formatBillNumber(offering.id)}</small>
                           <br />
                           <small>
-                            Phone: {offering.items[0]?.devoteeMobileNumber || 'N/A'}
-                          </small>
-                          <br />
-                          <small>
                             Transaction: {new Date(offering.transactionDate).toLocaleDateString()}
                           </small>
                           <br />
                           <small>
                             Offering: {new Date(offering.offeringDate).toLocaleDateString()}
+                          </small>
+                          <br />
+                          <small>
+                            Phone: {offering.items[0]?.devoteeMobileNumber || 'N/A'}
                           </small>
                         </div>
                         <div className='text-end'>

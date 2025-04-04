@@ -9,6 +9,7 @@ import java.util.List;
 @Data
 public class DevoteeOfferingResponseDto {
     private Long id;
+    private String billNumber;  // For displaying Bill #
     private LocalDate transactionDate;
     private LocalDate offeringDate;
     private String createdBy;
@@ -16,6 +17,7 @@ public class DevoteeOfferingResponseDto {
     private String lastUpdatedBy;
     private LocalDateTime lastUpdatedAt;
     private List<DevoteeOfferingItemResponseDto> items;
+    private BigDecimal totalAmount;  // For displaying Total Amount
 
     @Data
     public static class DevoteeOfferingItemResponseDto {
@@ -23,6 +25,7 @@ public class DevoteeOfferingResponseDto {
         private String devoteeMobileNumber;
         private String vazhipaduId;
         private String vazhipaduName;
+        private Integer vazhipaduCode;
         private String devoteeName;
         private String devoteeNakshtram;
         private String deityName;

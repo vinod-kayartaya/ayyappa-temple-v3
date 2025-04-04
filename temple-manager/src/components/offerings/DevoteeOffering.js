@@ -3,7 +3,9 @@ import {
   getDevoteeNames,
   getVazhipaduByCode,
   createDevoteeOffering,
+  updateDevoteeOffering,
   fetchDeities,
+  printBill,
 } from '../../services/api';
 
 const NAKSHATHRAS = [
@@ -36,7 +38,7 @@ const NAKSHATHRAS = [
   'Revati',
 ];
 
-function DevoteeOffering() {
+function DevoteeOffering({ offering, onSubmit, onCancel }) {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [devoteeNames, setDevoteeNames] = useState([]);
   const [offeringRows, setOfferingRows] = useState([]);
@@ -44,6 +46,8 @@ function DevoteeOffering() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [shouldPrint, setShouldPrint] = useState(true);
+  const [printLoading, setPrintLoading] = useState(false);
   const vazhipaduInputRefs = useRef({});
   const [offeringDate, setOfferingDate] = useState(
     new Date().toISOString().split('T')[0]
@@ -52,6 +56,29 @@ function DevoteeOffering() {
   // Add refs for name and nos inputs
   const nameInputRefs = useRef({});
   const nosInputRefs = useRef({});
+
+  // Initialize form with offering data if editing
+  useEffect(() => {
+    if (offering) {
+      setPhoneNumber(offering.items[0]?.devoteeMobileNumber || '');
+      setOfferingDate(offering.offeringDate);
+      
+      // Convert offering items to row format
+      const rows = offering.items.map(item => ({
+        id: item.id || Date.now(),
+        devoteeName: item.devoteeName || '',
+        nakshatra: item.devoteeNakshtram || '',
+        vazhipaduCode: item.vazhipaduCode || '',  // Use vazhipadu code
+        vazhipaduId: item.vazhipaduId,
+        vazhipaduName: item.vazhipaduName || '',
+        deityName: item.deityName || '',
+        nos: item.nos || 1,
+        rate: item.amount / (item.nos || 1),
+      }));
+      
+      setOfferingRows(rows);
+    }
+  }, [offering]);
 
   useEffect(() => {
     const loadDeities = async () => {
@@ -158,6 +185,19 @@ function DevoteeOffering() {
     }
   };
 
+  const handlePrint = async (offeringData) => {
+    try {
+      setPrintLoading(true);
+      await printBill(offeringData);
+      setSuccessMessage(prev => prev + ' Receipt printed successfully.');
+    } catch (err) {
+      console.error('Print error:', err);
+      setError('Failed to print receipt');
+    } finally {
+      setPrintLoading(false);
+    }
+  };
+
   const handleSave = async () => {
     try {
       // Validate all fields are filled
@@ -185,23 +225,33 @@ function DevoteeOffering() {
           deityName: row.deityName,
           nos: row.nos,
           amount: row.rate * row.nos,
+          vazhipaduName: row.vazhipaduName,
+          vazhipaduCode: row.vazhipaduCode,
         })),
       };
 
-      const response = await createDevoteeOffering(offeringData);
+      let response;
+      if (offering) {
+        response = await updateDevoteeOffering(offering.id, offeringData);
+      } else {
+        response = await createDevoteeOffering(offeringData);
+        if (shouldPrint) {
+          await handlePrint(response);
+        }
+      }
 
       if (response) {
-        // Check if we got a successful response
-        // Show success message
-        setSuccessMessage('Offering saved successfully');
+        setSuccessMessage(offering ? 'Offering updated successfully' : 'Offering saved successfully');
+        
+        if (onSubmit) {
+          onSubmit(response);
+        } else {
+          setOfferingRows([]);
+          setPhoneNumber('');
+          setDevoteeNames([]);
+          setError('');
+        }
 
-        // Reset all form state
-        setOfferingRows([]);
-        setPhoneNumber('');
-        setDevoteeNames([]);
-        setError(''); // Ensure error is cleared
-
-        // Clear success message after delay
         setTimeout(() => {
           setSuccessMessage('');
         }, 3000);
@@ -221,249 +271,311 @@ function DevoteeOffering() {
   };
 
   return (
-    <div className='container'>
-      <div className='card mt-4'>
-        <div className='card-body'>
-          <h5 className='card-title mb-4'>Record Offering</h5>
+    <div className={!offering ? 'container' : undefined}>
+      {error && (
+        <div className='alert alert-danger' role='alert'>
+          {error}
+        </div>
+      )}
 
-          {error && (
-            <div className='alert alert-danger' role='alert'>
-              {error}
-            </div>
-          )}
+      {successMessage && (
+        <div className='alert alert-success' role='alert'>
+          {successMessage}
+        </div>
+      )}
 
-          {successMessage && (
-            <div className='alert alert-success' role='alert'>
-              {successMessage}
-            </div>
-          )}
+      {!offering && <h5 className='mb-4'>Record Offering</h5>}
+      
+      {offering && (
+        <div className='mb-4'>
+          <h6 className='text-muted'>Bill #{String(offering.id).padStart(6, '0')}</h6>
+        </div>
+      )}
 
-          <div className='row'>
-            <div className='col-md-4'>
-              <div className='mb-3'>
-                <label className='form-label'>Mobile number:</label>
-                <input
-                  type='text'
-                  className='form-control'
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  onKeyPress={handlePhoneNumberSubmit}
-                  placeholder='Enter phone number and press Enter'
-                  autoFocus
-                />
-              </div>
-
-              <div className='mb-4'>
-                <label className='form-label'>Offering Date:</label>
-                <input
-                  type='date'
-                  className='form-control'
-                  value={offeringDate}
-                  onChange={(e) => setOfferingDate(e.target.value)}
-                  min={new Date().toISOString().split('T')[0]}
-                />
-              </div>
-            </div>
-
-            {devoteeNames.length > 0 && (
-              <div className='col-md-8'>
-                <label className='form-label'>Add Devotee:</label>
-                <div>
-                  {devoteeNames.map((devotee) => (
-                    <button
-                      key={devotee.devoteeName}
-                      type="button"
-                      className='btn btn-outline-secondary me-2 mb-2'
-                      onClick={() => handleDevoteeSelect(devotee)}
-                    >
-                      <i className='bi bi-plus-lg me-1'></i>
-                      {devotee.devoteeName}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+      <div className='row'>
+        <div className='col-md-4'>
+          <div className='mb-3'>
+            <label className='form-label'>Mobile number:</label>
+            <input
+              type='text'
+              className='form-control'
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              onKeyPress={handlePhoneNumberSubmit}
+              placeholder='Enter phone number and press Enter'
+              autoFocus={!offering}
+            />
           </div>
 
-          <div className='table-responsive'>
-            <table className='table table-bordered'>
-              <thead>
-                <tr>
-                  <th>Vazhipadu code*</th>
-                  <th>Vazhipadu name</th>
-                  <th>Name*</th>
-                  <th>Star*</th>
-                  <th>Deity*</th>
-                  <th>Nos</th>
-                  <th>Rate</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {offeringRows.map((row) => (
-                  <tr key={row.id}>
-                    <td>
-                      <input
-                        ref={(el) => (vazhipaduInputRefs.current[row.id] = el)}
-                        type='text'
-                        className='form-control'
-                        value={row.vazhipaduCode}
-                        onChange={(e) => {
-                          setOfferingRows((prev) =>
-                            prev.map((r) =>
-                              r.id === row.id
-                                ? { ...r, vazhipaduCode: e.target.value }
-                                : r
-                            )
-                          );
-                        }}
-                        onKeyPress={(e) => handleVazhipaduCodeSubmit(e, row.id)}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type='text'
-                        className='form-control'
-                        value={row.vazhipaduName}
-                        readOnly
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type='text'
-                        className='form-control'
-                        value={row.devoteeName}
-                        ref={el => nameInputRefs.current[row.id] = el}
-                        onChange={(e) => {
-                          setOfferingRows((prev) =>
-                            prev.map((r) =>
-                              r.id === row.id
-                                ? { ...r, devoteeName: e.target.value }
-                                : r
-                            )
-                          );
-                        }}
-                      />
-                    </td>
-                    <td>
-                      <select
-                        className='form-select'
-                        value={row.nakshatra}
-                        onChange={(e) => {
-                          setOfferingRows((prev) =>
-                            prev.map((r) =>
-                              r.id === row.id
-                                ? { ...r, nakshatra: e.target.value }
-                                : r
-                            )
-                          );
-                        }}
-                      >
-                        <option value=''>Select Star</option>
-                        {NAKSHATHRAS.map((nakshatra) => (
-                          <option key={nakshatra} value={nakshatra}>
-                            {nakshatra}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td>
-                      <select
-                        className='form-select'
-                        value={row.deityName}
-                        onChange={(e) => {
-                          setOfferingRows((prev) =>
-                            prev.map((r) =>
-                              r.id === row.id
-                                ? { ...r, deityName: e.target.value }
-                                : r
-                            )
-                          );
-                        }}
-                      >
-                        <option value=''>Select Deity</option>
-                        {deities.map((deity) => (
-                          <option key={deity.id} value={deity.name}>
-                            {deity.name}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td>
-                      <input
-                        type='number'
-                        className='form-control'
-                        value={row.nos}
-                        ref={el => nosInputRefs.current[row.id] = el}
-                        onChange={(e) => {
-                          setOfferingRows((prev) =>
-                            prev.map((r) =>
-                              r.id === row.id
-                                ? { ...r, nos: parseInt(e.target.value) || 1 }
-                                : r
-                            )
-                          );
-                        }}
-                        min='1'
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type='number'
-                        className='form-control'
-                        value={row.rate}
-                        readOnly
-                      />
-                    </td>
-                    <td className="align-middle">
-                      <button 
-                        type="button"
-                        className="btn btn-outline-danger btn-sm"
-                        onClick={() => {
-                          setOfferingRows(prev => prev.filter(r => r.id !== row.id));
-                        }}
-                      >
-                        <i className="bi bi-trash"></i>
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className='mb-4'>
+            <label className='form-label'>Offering Date:</label>
+            <input
+              type='date'
+              className='form-control'
+              value={offeringDate}
+              onChange={(e) => setOfferingDate(e.target.value)}
+              min={new Date().toISOString().split('T')[0]}
+            />
           </div>
+        </div>
 
-          <div className='d-flex justify-content-between align-items-center mt-3'>
-            <button
-              className='btn btn-secondary'
-              onClick={() => addOfferingRow()}
-              disabled={loading}
-            >
-              + Add New
-            </button>
+        {devoteeNames.length > 0 && (
+          <div className='col-md-8'>
+            <label className='form-label'>Add Devotee:</label>
+            <div>
+              {devoteeNames.map((devotee) => (
+                <button
+                  key={devotee.devoteeName}
+                  type="button"
+                  className='btn btn-outline-secondary me-2 mb-2'
+                  onClick={() => handleDevoteeSelect(devotee)}
+                >
+                  <i className='bi bi-plus-lg me-1'></i>
+                  {devotee.devoteeName}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
 
-            <div className='text-end'>
-              <div className='h5 mb-3'>
-                Total Amount: ₹{calculateTotal()}
-              </div>
+      <div className='table-responsive'>
+        <table className='table table-bordered'>
+          <thead>
+            <tr>
+              <th>Vazhipadu code*</th>
+              <th>Vazhipadu name</th>
+              <th>Name*</th>
+              <th>Star*</th>
+              <th>Deity*</th>
+              <th>Nos</th>
+              <th>Rate</th>
+              <th>Total</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {offeringRows.map((row) => (
+              <tr key={row.id}>
+                <td>
+                  <input
+                    ref={(el) => (vazhipaduInputRefs.current[row.id] = el)}
+                    type='text'
+                    className='form-control'
+                    value={row.vazhipaduCode}
+                    onChange={(e) => {
+                      setOfferingRows((prev) =>
+                        prev.map((r) =>
+                          r.id === row.id
+                            ? { ...r, vazhipaduCode: e.target.value }
+                            : r
+                        )
+                      );
+                    }}
+                    onKeyPress={(e) => handleVazhipaduCodeSubmit(e, row.id)}
+                  />
+                </td>
+                <td>
+                  <input
+                    type='text'
+                    className='form-control'
+                    value={row.vazhipaduName}
+                    readOnly
+                  />
+                </td>
+                <td>
+                  <input
+                    type='text'
+                    className='form-control'
+                    value={row.devoteeName}
+                    ref={el => nameInputRefs.current[row.id] = el}
+                    onChange={(e) => {
+                      setOfferingRows((prev) =>
+                        prev.map((r) =>
+                          r.id === row.id
+                            ? { ...r, devoteeName: e.target.value }
+                            : r
+                        )
+                      );
+                    }}
+                  />
+                </td>
+                <td>
+                  <select
+                    className='form-select'
+                    value={row.nakshatra}
+                    onChange={(e) => {
+                      setOfferingRows((prev) =>
+                        prev.map((r) =>
+                          r.id === row.id
+                            ? { ...r, nakshatra: e.target.value }
+                            : r
+                        )
+                      );
+                    }}
+                  >
+                    <option value=''>Select Star</option>
+                    {NAKSHATHRAS.map((nakshatra) => (
+                      <option key={nakshatra} value={nakshatra}>
+                        {nakshatra}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+                <td>
+                  <select
+                    className='form-select'
+                    value={row.deityName}
+                    onChange={(e) => {
+                      setOfferingRows((prev) =>
+                        prev.map((r) =>
+                          r.id === row.id
+                            ? { ...r, deityName: e.target.value }
+                            : r
+                        )
+                      );
+                    }}
+                  >
+                    <option value=''>Select Deity</option>
+                    {deities.map((deity) => (
+                      <option key={deity.id} value={deity.name}>
+                        {deity.name}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+                <td>
+                  <input
+                    type='number'
+                    className='form-control'
+                    value={row.nos}
+                    ref={el => nosInputRefs.current[row.id] = el}
+                    onChange={(e) => {
+                      setOfferingRows((prev) =>
+                        prev.map((r) =>
+                          r.id === row.id
+                            ? { ...r, nos: parseInt(e.target.value) || 1 }
+                            : r
+                        )
+                      );
+                    }}
+                    min='1'
+                  />
+                </td>
+                <td>
+                  <input
+                    type='number'
+                    className='form-control'
+                    value={row.rate}
+                    readOnly
+                  />
+                </td>
+                <td>
+                  <input
+                    type='number'
+                    className='form-control'
+                    value={row.nos * row.rate}
+                    readOnly
+                  />
+                </td>
+                <td className="align-middle">
+                  <button 
+                    type="button"
+                    className="btn btn-outline-danger btn-sm"
+                    onClick={() => {
+                      setOfferingRows(prev => prev.filter(r => r.id !== row.id));
+                    }}
+                  >
+                    <i className="bi bi-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className='d-flex justify-content-between align-items-center mt-3'>
+        <div className='d-flex align-items-center gap-3'>
+          <button
+            className='btn btn-secondary'
+            onClick={() => addOfferingRow()}
+            disabled={loading}
+          >
+            + Add New
+          </button>
+          
+          {!offering && (
+            <div className="form-check">
+              <input
+                type="checkbox"
+                className="form-check-input"
+                id="printReceipt"
+                checked={shouldPrint}
+                onChange={(e) => setShouldPrint(e.target.checked)}
+              />
+              <label className="form-check-label" htmlFor="printReceipt">
+                Print receipt
+              </label>
+            </div>
+          )}
+        </div>
+
+        <div className='text-end'>
+          <div className='h5 mb-3'>
+            Total Amount: ₹{calculateTotal()}
+          </div>
+          <div className="d-flex gap-2 justify-content-end">
+            {offering && (
               <button
-                className='btn btn-primary'
-                onClick={handleSave}
-                disabled={loading || offeringRows.length === 0}
+                type="button"
+                className='btn btn-info'
+                onClick={() => handlePrint(offering)}
+                disabled={printLoading}
               >
-                {loading ? (
+                {printLoading ? (
                   <>
                     <span
                       className='spinner-border spinner-border-sm me-2'
                       role='status'
                       aria-hidden='true'
                     ></span>
-                    Saving...
+                    Printing...
                   </>
                 ) : (
-                  'Save'
+                  'Print Receipt'
                 )}
               </button>
-            </div>
+            )}
+            
+            {onCancel && (
+              <button
+                type="button"
+                className='btn btn-secondary'
+                onClick={onCancel}
+                disabled={loading}
+              >
+                Cancel
+              </button>
+            )}
+            <button
+              className='btn btn-primary'
+              onClick={handleSave}
+              disabled={loading || offeringRows.length === 0}
+            >
+              {loading ? (
+                <>
+                  <span
+                    className='spinner-border spinner-border-sm me-2'
+                    role='status'
+                    aria-hidden='true'
+                  ></span>
+                  {offering ? 'Updating...' : 'Saving...'}
+                </>
+              ) : (
+                offering ? 'Update' : 'Save'
+              )}
+            </button>
           </div>
         </div>
       </div>

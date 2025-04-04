@@ -78,8 +78,9 @@ public class VazhipaduService {
         repository.deleteById(id);
     }
 
-    public Vazhipadu getVazhipaduByCode(Integer code) {
+    public VazhipaduResponseDto getVazhipaduByCode(Integer code) {
         return repository.findByCode(code)
+                .map(this::mapToDto)
                 .orElseThrow(() -> new ResourceNotFoundException("Vazhipadu not found with code: " + code));
     }
 
