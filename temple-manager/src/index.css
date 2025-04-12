@@ -21,3 +21,84 @@
   background-color: #2d3748;
   border-color: #2d3748;
 }
+
+/* Add these print styles to your existing index.css */
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+  
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    margin: 0;
+    padding: 0mm;
+  }
+
+  /* Hide absolutely everything except the report content */
+  body * {
+    visibility: hidden;
+  }
+
+  .card-body {
+    visibility: visible;
+    position: absolute;
+    left: -70px;
+    top: 0;
+    width: 130%;
+    padding: 0;
+    margin: 0;
+  }
+
+  .card-body * {
+    visibility: visible;
+  }
+
+  /* Only keep borders for table cells */
+  .table {
+    width: 100% !important;
+    margin: 0 !important;
+    border-collapse: collapse !important;
+  }
+
+  .table-bordered td, 
+  .table-bordered th {
+    border: 1px solid #dee2e6 !important;
+  }
+
+  /* Report header styles */
+  .report-header {
+    text-align: left !important;
+    margin: 0 0 20px 0 !important;
+  }
+
+  .report-header h4 {
+    margin-bottom: 10px !important;
+  }
+
+  .report-header p {
+    margin: 0 !important;
+  }
+}
+
+/* Nested Dropdown styles */
+.dropdown-menu li {
+  position: relative;
+}
+
+.dropdown-menu .dropdown-submenu {
+  display: none;
+  position: absolute;
+  left: 100%;
+  top: 0;
+}
+
+.dropdown-menu .dropdown-submenu-left {
+  right: 100%;
+  left: auto;
+}
+
+.dropdown-menu > li:hover > .dropdown-submenu {
+  display: block;
+}

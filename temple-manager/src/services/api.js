@@ -1345,3 +1345,67 @@ export const printSalesBill = async (saleData) => {
     throw error;
   }
 };
+
+// Add this with the other API functions
+export const fetchRevenueReport = async (startDate, endDate) => {
+  try {
+    const url = `${process.env.REACT_APP_API_URL}/reports/revenue?fromDate=${startDate}&toDate=${endDate}`;
+    
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${JSON.parse(localStorage.getItem('authState')).token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to fetch revenue report');
+    }
+
+    return response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchMonthlyRevenueReport = async (year) => {
+  try {
+    const url = `${process.env.REACT_APP_API_URL}/reports/revenue/monthly/${year}`;
+    
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${JSON.parse(localStorage.getItem('authState')).token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to fetch monthly revenue report');
+    }
+
+    return response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchUserWiseRevenueReport = async (startDate, endDate) => {
+  try {
+    const url = `${process.env.REACT_APP_API_URL}/reports/revenue/userwise?fromDate=${startDate}&toDate=${endDate}`;
+    
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${JSON.parse(localStorage.getItem('authState')).token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to fetch user-wise revenue report');
+    }
+
+    return response.json();
+  } catch (error) {
+    throw error;
+  }
+};

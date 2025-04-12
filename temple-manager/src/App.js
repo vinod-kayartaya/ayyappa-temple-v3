@@ -30,6 +30,9 @@ import ExpenseCategories from './pages/masters/ExpenseCategories';
 import Donations from './pages/transactions/Donations';
 import TransactionSales from './pages/transactions/Sales';
 import Offerings from './pages/transactions/Offerings';
+import RevenueReport from './pages/reports/revenue/DailyRevenueReport';
+import MonthlyRevenueReport from './pages/reports/revenue/MonthlyRevenueReport';
+import UserWiseRevenueReport from './pages/reports/revenue/UserWiseRevenueReport';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useSelector((state) => state.auth);
@@ -197,6 +200,30 @@ function App() {
             element={
               <ProtectedRoute>
                 <ExpensesReport />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reports/revenue/daily"
+            element={
+              <ProtectedRoute>
+                <RevenueReport />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reports/revenue/monthly"
+            element={
+              <ProtectedRoute>
+                <MonthlyRevenueReport />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reports/revenue/userwise"
+            element={
+              <ProtectedRoute>
+                <UserWiseRevenueReport />
               </ProtectedRoute>
             }
           />

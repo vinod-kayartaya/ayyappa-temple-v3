@@ -228,14 +228,34 @@ function Navbar() {
                       </Link>
                     </li>
                     <li>
-                      <Link className='dropdown-item' to='/reports/revenue'>
-                        Revenue Reports
-                      </Link>
-                    </li>
-                    <li>
                       <Link className='dropdown-item' to='/reports/expenses'>
                         Expenses Report
                       </Link>
+                    </li>
+                    <li>
+                      <button 
+                        className='dropdown-item dropdown-toggle'
+                        type="button"
+                      >
+                        Revenue
+                      </button>
+                      <ul className='dropdown-menu dropdown-submenu'>
+                        <li>
+                          <Link className='dropdown-item' to='/reports/revenue/daily'>
+                            Daily
+                          </Link>
+                        </li>
+                        <li>
+                          <Link className='dropdown-item' to='/reports/revenue/monthly'>
+                            Monthly
+                          </Link>
+                        </li>
+                        <li>
+                          <Link className='dropdown-item' to='/reports/revenue/userwise'>
+                            Daily by User
+                          </Link>
+                        </li>
+                      </ul>
                     </li>
                   </ul>
                 </li>

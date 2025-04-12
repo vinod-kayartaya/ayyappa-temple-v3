@@ -10,7 +10,7 @@ Content-Type: application/json
 
 {
     "username": "vinod",
-    "password": "Don4Vinod$"
+    "password": "Cyblore123!"
 }
 
 > {% client.global.set("auth_token", response.body.token); %}

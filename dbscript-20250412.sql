@@ -1,10 +1,8 @@
-CREATE DATABASE  IF NOT EXISTS `templedb` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `templedb`;
--- MySQL dump 10.13  Distrib 8.0.41, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.36, for macos14 (x86_64)
 --
 -- Host: 127.0.0.1    Database: templedb
 -- ------------------------------------------------------
--- Server version	8.0.41
+-- Server version	8.4.4
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -169,7 +167,7 @@ CREATE TABLE `devotee_offering_items` (
 
 LOCK TABLES `devotee_offering_items` WRITE;
 /*!40000 ALTER TABLE `devotee_offering_items` DISABLE KEYS */;
-INSERT INTO `devotee_offering_items` VALUES ('070bdd89-13a4-4d10-a741-f4a621b64bbe',3,'9731424784','474e581c-08de-11f0-99d0-d2919aa33763','Vinod','Jyeshtha','Lord Ganesha',1,50.00),('0b1b0327-2e22-4a14-8fce-ba47e0c36856',4,'9844012345','474e581c-08de-11f0-99d0-d2919aa33763','Kiran','Vishakha','Lord Ayyappa',1,50.00),('41f096ba-a8f2-4124-a7f1-847b9df48cb4',7,'9900105805','474e60ca-08de-11f0-99d0-d2919aa33763','Saju','Punarvasu','Lord Ayyappa',1,100.00),('47599a4a-08de-11f0-99d0-d2919aa33763',1,'9876543219','474e581c-08de-11f0-99d0-d2919aa33763','Arun Kumar','Ashwini','Lord Ayyappa',1,50.00),('4759a66f-08de-11f0-99d0-d2919aa33763',1,'9876543220','474e60ca-08de-11f0-99d0-d2919aa33763','Meera Devi','Bharani','Lord Ayyappa',1,100.00),('4759bbd7-08de-11f0-99d0-d2919aa33763',2,'9876543221','474e63f3-08de-11f0-99d0-d2919aa33763','Krishna Menon','Krittika','Lord Ayyappa',1,1000.00),('4a93084d-dde1-435f-acb6-66368a8c8c95',5,'9731424784','474e60ca-08de-11f0-99d0-d2919aa33763','Vinod','Jyeshtha','Lord Ayyappa',1,100.00),('5b994467-4c79-4c6c-ac4c-653fc3064f84',6,'9731424784','474e60ca-08de-11f0-99d0-d2919aa33763','Vinod','Jyeshtha','Lord Ayyappa',1,100.00),('5bb8220b-e5b1-4378-8f6e-58eda65b55f9',3,'9731424784','474e581c-08de-11f0-99d0-d2919aa33763','Anupama','Punarvasu','Lord Ganesha',1,50.00),('77029072-c05b-42fe-a3d9-6584e4e6f293',8,'9731424784','474e581c-08de-11f0-99d0-d2919aa33763','Anupama','Punarvasu','Lord Ayyappa',3,150.00),('86887c92-3a25-42e9-a02c-2ebfbaeb9f83',9,'9731424784','474e581c-08de-11f0-99d0-d2919aa33763','Vinod','Jyeshtha','Lord Ganesha',1,50.00),('8f87518c-d556-41f7-acdd-46c9d0f786e2',4,'9844012345','474e581c-08de-11f0-99d0-d2919aa33763','Kishore','Purva Phalguni','Lord Ganesha',1,50.00),('c6fec5a2-4ad2-4b87-8979-7906336fd88b',8,'9731424784','474e60ca-08de-11f0-99d0-d2919aa33763','Vinod','Jyeshtha','Lord Ganesha',3,300.00),('efe2dea4-994f-4edf-a360-ca47ad5092d0',5,'9731424784','474e60ca-08de-11f0-99d0-d2919aa33763','Anupama','Punarvasu','Lord Ayyappa',1,100.00);
+INSERT INTO `devotee_offering_items` VALUES ('070bdd89-13a4-4d10-a741-f4a621b64bbe',3,'9731424784','474e581c-08de-11f0-99d0-d2919aa33763','Vinod','Jyeshtha','Lord Ganesha',1,50.00),('0b1b0327-2e22-4a14-8fce-ba47e0c36856',4,'9844012345','474e581c-08de-11f0-99d0-d2919aa33763','Kiran','Vishakha','Lord Ayyappa',1,50.00),('41f096ba-a8f2-4124-a7f1-847b9df48cb4',7,'9900105805','474e60ca-08de-11f0-99d0-d2919aa33763','Saju','Punarvasu','Lord Ayyappa',1,100.00),('47599a4a-08de-11f0-99d0-d2919aa33763',1,'9876543219','474e581c-08de-11f0-99d0-d2919aa33763','Arun Kumar','Ashwini','Lord Ayyappa',1,50.00),('4759a66f-08de-11f0-99d0-d2919aa33763',1,'9876543220','474e60ca-08de-11f0-99d0-d2919aa33763','Meera Devi','Bharani','Lord Ayyappa',1,100.00),('4759bbd7-08de-11f0-99d0-d2919aa33763',2,'9876543221','474e63f3-08de-11f0-99d0-d2919aa33763','Krishna Menon','Krittika','Lord Ayyappa',1,1000.00),('4a93084d-dde1-435f-acb6-66368a8c8c95',5,'9731424784','474e60ca-08de-11f0-99d0-d2919aa33763','Vinod','Jyeshtha','Lord Ayyappa',1,100.00),('5b994467-4c79-4c6c-ac4c-653fc3064f84',6,'9731424784','474e60ca-08de-11f0-99d0-d2919aa33763','Vinod','Jyeshtha','Lord Ayyappa',1,100.00),('5bb8220b-e5b1-4378-8f6e-58eda65b55f9',3,'9731424784','474e581c-08de-11f0-99d0-d2919aa33763','Anupama','Punarvasu','Lord Ganesha',1,50.00),('688a73d5-ab14-4b8f-b38e-3d9aa90daafc',10,'9731424784','474e581c-08de-11f0-99d0-d2919aa33763','Anupama','Punarvasu','Lord Ayyappa',1,50.00),('77029072-c05b-42fe-a3d9-6584e4e6f293',8,'9731424784','474e581c-08de-11f0-99d0-d2919aa33763','Anupama','Punarvasu','Lord Ayyappa',3,150.00),('86887c92-3a25-42e9-a02c-2ebfbaeb9f83',9,'9731424784','474e581c-08de-11f0-99d0-d2919aa33763','Vinod','Jyeshtha','Lord Ganesha',1,50.00),('8f87518c-d556-41f7-acdd-46c9d0f786e2',4,'9844012345','474e581c-08de-11f0-99d0-d2919aa33763','Kishore','Purva Phalguni','Lord Ganesha',1,50.00),('c3eb52a6-8b16-4c08-b513-4cc25ccf97c2',10,'9731424784','474e581c-08de-11f0-99d0-d2919aa33763','Vinod','Jyeshtha','Lord Ayyappa',1,50.00),('c6fec5a2-4ad2-4b87-8979-7906336fd88b',8,'9731424784','474e60ca-08de-11f0-99d0-d2919aa33763','Vinod','Jyeshtha','Lord Ganesha',3,300.00),('efe2dea4-994f-4edf-a360-ca47ad5092d0',5,'9731424784','474e60ca-08de-11f0-99d0-d2919aa33763','Anupama','Punarvasu','Lord Ayyappa',1,100.00);
 /*!40000 ALTER TABLE `devotee_offering_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -189,7 +187,7 @@ CREATE TABLE `devotee_offerings` (
   `last_updated_by` varchar(255) DEFAULT NULL,
   `last_updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -198,7 +196,7 @@ CREATE TABLE `devotee_offerings` (
 
 LOCK TABLES `devotee_offerings` WRITE;
 /*!40000 ALTER TABLE `devotee_offerings` DISABLE KEYS */;
-INSERT INTO `devotee_offerings` VALUES (1,'2025-03-24','2025-03-24','system','2025-03-24 18:32:02',NULL,NULL),(2,'2025-03-24','2025-03-24','system','2025-03-24 18:32:02',NULL,NULL),(3,'2025-04-03','2025-04-03','vinod','2025-04-03 19:09:00',NULL,NULL),(4,'2025-04-03','2025-04-03','vinod','2025-04-03 19:17:39',NULL,NULL),(5,'2025-04-03','2025-04-03','vinod','2025-04-03 20:02:17',NULL,NULL),(6,'2025-04-03','2025-04-03','vinod','2025-04-03 20:26:31',NULL,NULL),(7,'2025-04-03','2025-04-03','vinod','2025-04-03 20:33:59',NULL,NULL),(8,'2025-04-03','2025-04-03','vinod','2025-04-03 20:56:51','vinod','2025-04-03 21:22:05'),(9,'2025-04-03','2025-04-05','vinod','2025-04-03 20:57:39',NULL,NULL);
+INSERT INTO `devotee_offerings` VALUES (1,'2025-03-24','2025-03-24','system','2025-03-24 18:32:02',NULL,NULL),(2,'2025-03-24','2025-03-24','system','2025-03-24 18:32:02',NULL,NULL),(3,'2025-04-03','2025-04-03','vinod','2025-04-03 19:09:00',NULL,NULL),(4,'2025-04-03','2025-04-03','vinod','2025-04-03 19:17:39',NULL,NULL),(5,'2025-04-03','2025-04-03','vinod','2025-04-03 20:02:17',NULL,NULL),(6,'2025-04-03','2025-04-03','vinod','2025-04-03 20:26:31',NULL,NULL),(7,'2025-04-03','2025-04-03','vinod','2025-04-03 20:33:59',NULL,NULL),(8,'2025-04-03','2025-04-03','vinod','2025-04-03 20:56:51','vinod','2025-04-03 21:22:05'),(9,'2025-04-03','2025-04-05','vinod','2025-04-03 20:57:39',NULL,NULL),(10,'2025-04-12','2025-04-12','vinod','2025-04-12 08:56:01',NULL,NULL);
 /*!40000 ALTER TABLE `devotee_offerings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -686,4 +684,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-12  6:28:39
+-- Dump completed on 2025-04-12 10:13:26

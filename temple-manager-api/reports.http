@@ -1,0 +1,33 @@
+@auth_token = eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2aW5vZCIsImlhdCI6MTc0NDQyNTgyOCwiZXhwIjoxNzQ3MDE3ODI4fQ.F_Q_t1swJrPGyUK-eh2xG2CebJj3FuRv9nzh3PmPiomNstX9DT7_ePtIQpY1JN0OWiTdQl6LgdZH6gmiSQjcyQ
+
+@host = localhost:8080
+
+### Login to get token
+POST /api/auth/login
+Host: {{host}}
+Content-Type: application/json
+
+{
+    "username": "vinod",
+    "password": "Cyblore123!"
+}
+###
+
+### Get Daily Revenue Report
+GET /api/reports/revenue?fromDate=2025-03-01&toDate=2025-04-01
+Host: {{host}}
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+### Get Monthly Revenue Report
+GET /api/reports/revenue/monthly/2025
+Host: {{host}}
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+### Get Userwise Revenue Report
+GET /api/reports/revenue/userwise?fromDate=2025-03-01&toDate=2025-04-12
+Host: {{host}}
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
