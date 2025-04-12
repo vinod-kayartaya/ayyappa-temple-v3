@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import SalesForm from '../../components/sales/SalesForm';
 import DateRangePicker from '../../components/common/DateRangePicker';
 import Pagination from '../../components/common/Pagination';
 import { 
   fetchSales, 
-  createSale, 
   updateSale, 
   deleteSale,
 } from '../../services/api';
@@ -35,7 +34,7 @@ function Sales() {
   const [filteredSales, setFilteredSales] = useState(null);
 
   // Update URL when state changes
-  const updateUrlParams = (params) => {
+  const updateUrlParams = useCallback((params) => {
     const newParams = new URLSearchParams(searchParams);
     Object.entries(params).forEach(([key, value]) => {
       if (value) {
@@ -45,28 +44,9 @@ function Sales() {
       }
     });
     setSearchParams(newParams);
-  };
+  }, [setSearchParams, searchParams]);
 
-  useEffect(() => {
-    loadSales();
-  }, [dateRange, pagination.page, pagination.size]); // Dependencies for loadSales
-
-  useEffect(() => {
-    // Update URL when search term changes
-    updateUrlParams({ search: searchTerm || null });
-    
-    if (searchTerm) {
-      const filtered = sales.filter(sale => 
-        sale.customerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        sale.customerMobile?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setFilteredSales(filtered);
-    } else {
-      setFilteredSales(null);
-    }
-  }, [searchTerm, sales]);
-
-  const loadSales = async () => {
+  const loadSales = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetchSales({
@@ -75,7 +55,13 @@ function Sales() {
         startDate: dateRange.startDate.toISOString().split('T')[0],
         endDate: dateRange.endDate.toISOString().split('T')[0]
       });
-      setSales(response.content);
+
+      // Sort sales by date in descending order (newest first)
+      const sortedSales = [...response.content].sort((a, b) => 
+        new Date(b.saleDate) - new Date(a.saleDate)
+      );
+      
+      setSales(sortedSales);
       setPagination(prev => ({
         ...prev,
         totalElements: response.totalElements,
@@ -96,7 +82,26 @@ function Sales() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [dateRange, pagination.page, pagination.size, updateUrlParams]);
+
+  useEffect(() => {
+    loadSales();
+  }, [dateRange, pagination.page, pagination.size, loadSales]); // Added loadSales dependency
+
+  useEffect(() => {
+    // Update URL when search term changes
+    updateUrlParams({ search: searchTerm || null });
+    
+    if (searchTerm) {
+      const filtered = sales.filter(sale => 
+        sale.customerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        sale.customerMobile?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredSales(filtered);
+    } else {
+      setFilteredSales(null);
+    }
+  }, [searchTerm, sales, updateUrlParams]); // Added updateUrlParams dependency
 
   const handleEdit = (sale) => {
     setSelectedSale(sale);
@@ -212,6 +217,7 @@ function Sales() {
         <table className='table table-striped table-hover'>
           <thead>
             <tr>
+              <th>Bill #</th>
               <th>Date</th>
               <th>Customer Name</th>
               <th>Mobile</th>
@@ -223,6 +229,7 @@ function Sales() {
           <tbody>
             {(filteredSales || sales).map(sale => (
               <tr key={sale.id}>
+                <td>{sale.billNumber}</td>
                 <td>{formatDate(sale.saleDate)}</td>
                 <td>{sale.customerName}</td>
                 <td>{sale.customerMobile}</td>

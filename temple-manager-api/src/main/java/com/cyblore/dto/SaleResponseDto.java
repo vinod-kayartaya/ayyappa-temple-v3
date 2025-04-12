@@ -12,6 +12,7 @@ public class SaleResponseDto {
     private String customerMobile;
     private LocalDateTime saleDate;
     private BigDecimal totalAmount;
+    private String billNumber;
     private String createdBy;
     private LocalDateTime createdAt;
     private List<SaleItemResponseDto> items;

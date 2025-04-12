@@ -16,23 +16,33 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import java.time.LocalDate;
 
 @Service
 public class SaleServiceImpl implements SaleService {
 
     private final SaleRepository saleRepository;
     private final ProductRepository productRepository;
+    private final EntityManager entityManager;
 
-    public SaleServiceImpl(SaleRepository saleRepository, ProductRepository productRepository) {
+    public SaleServiceImpl(SaleRepository saleRepository, ProductRepository productRepository, EntityManager entityManager) {
         this.saleRepository = saleRepository;
         this.productRepository = productRepository;
+        this.entityManager = entityManager;
     }
 
     @Override
@@ -82,6 +92,10 @@ public class SaleServiceImpl implements SaleService {
         }
         
         sale.setTotalAmount(totalAmount);
+        
+        // Generate bill number before saving
+        sale.setBillNumber(generateBillNumber());
+        
         Sale savedSale = saleRepository.save(sale);
         
         return mapToDto(savedSale);
@@ -203,6 +217,7 @@ public class SaleServiceImpl implements SaleService {
         dto.setCustomerMobile(sale.getCustomerMobile());
         dto.setSaleDate(sale.getSaleDate());
         dto.setTotalAmount(sale.getTotalAmount());
+        dto.setBillNumber(sale.getBillNumber());
         dto.setCreatedBy(sale.getCreatedBy());
         dto.setCreatedAt(sale.getCreatedAt());
         
@@ -224,5 +239,20 @@ public class SaleServiceImpl implements SaleService {
         dto.setUnitPrice(item.getUnitPrice());
         dto.setTotalPrice(item.getTotalPrice());
         return dto;
+    }
+
+    @Transactional
+    public String generateBillNumber() {
+        // Insert a new record to get the next sequence
+        Query query = entityManager.createNativeQuery(
+            "INSERT INTO bill_sequence (last_used) VALUES (NOW())");
+        query.executeUpdate();
+        
+        // Get the last inserted ID
+        Query seqQuery = entityManager.createNativeQuery(
+            "SELECT LAST_INSERT_ID()");
+        Integer sequence = ((Number) seqQuery.getSingleResult()).intValue();
+        
+        return String.format("%05d", sequence);
     }
 } 

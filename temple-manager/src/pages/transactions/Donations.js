@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import DonationForm from '../../components/donations/DonationForm';
 import DateRangePicker from '../../components/common/DateRangePicker';
 import Pagination from '../../components/common/Pagination';
 import { 
   fetchDonations, 
-  createDonation, 
   updateDonation, 
   deleteDonation,
   fetchDonationCategories 
@@ -37,7 +36,7 @@ function Donations() {
   const [filteredDonations, setFilteredDonations] = useState(null);
 
   // Update URL when state changes
-  const updateUrlParams = (params) => {
+  const updateUrlParams = useCallback((params) => {
     const newParams = new URLSearchParams(searchParams);
     Object.entries(params).forEach(([key, value]) => {
       if (value) {
@@ -47,34 +46,13 @@ function Donations() {
       }
     });
     setSearchParams(newParams);
-  };
+  }, [setSearchParams, searchParams]);
 
   useEffect(() => {
     loadDonationCategories();
   }, []); // Run only once on mount
 
-  useEffect(() => {
-    loadDonations();
-  }, [dateRange, pagination.page, pagination.size]); // Dependencies for loadDonations
-
-  useEffect(() => {
-    // Update URL when search term changes
-    updateUrlParams({ search: searchTerm || null });
-    
-    if (searchTerm) {
-      const filtered = donations.filter(donation => 
-        donation.devoteeName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        donation.receiptNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        donation.devoteePhone?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        donation.devoteeEmail?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setFilteredDonations(filtered);
-    } else {
-      setFilteredDonations(null);
-    }
-  }, [searchTerm, donations]);
-
-  const loadDonations = async () => {
+  const loadDonations = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetchDonations({
@@ -104,7 +82,28 @@ function Donations() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [dateRange, pagination.page, pagination.size, updateUrlParams]);
+
+  useEffect(() => {
+    loadDonations();
+  }, [dateRange, pagination.page, pagination.size, loadDonations]); // Added loadDonations dependency
+
+  useEffect(() => {
+    // Update URL when search term changes
+    updateUrlParams({ search: searchTerm || null });
+    
+    if (searchTerm) {
+      const filtered = donations.filter(donation => 
+        donation.devoteeName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        donation.receiptNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        donation.devoteePhone?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        donation.devoteeEmail?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredDonations(filtered);
+    } else {
+      setFilteredDonations(null);
+    }
+  }, [searchTerm, donations, updateUrlParams]); // Added updateUrlParams dependency
 
   const loadDonationCategories = async () => {
     try {

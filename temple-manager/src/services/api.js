@@ -1302,7 +1302,7 @@ export const updateDevoteeOffering = async (id, offeringData) => {
 
 export const printBill = async (billData) => {
   try {
-    const response = await fetch('http://localhost:5000/print-bill', {
+    const response = await fetch('http://localhost:5000/print-offerings-bill', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -1318,6 +1318,29 @@ export const printBill = async (billData) => {
     }
 
     return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const printSalesBill = async (saleData) => {
+  try {
+    const response = await fetch('http://localhost:5000/print-sales-bill', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${JSON.parse(localStorage.getItem('authState')).token}`,
+      },
+      body: JSON.stringify(saleData),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to print receipt');
+    }
+
+    return data;
   } catch (error) {
     throw error;
   }

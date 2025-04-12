@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { fetchProducts, fetchProductByCode, createSale } from '../../services/api';
+import { fetchProductByCode, createSale, printSalesBill } from '../../services/api';
+import { toast } from 'react-toastify';
 
 function SalesForm({ sale, onSubmit, onCancel }) {
   const [customerName, setCustomerName] = useState('');
@@ -7,11 +8,20 @@ function SalesForm({ sale, onSubmit, onCancel }) {
   const [saleDate, setSaleDate] = useState(
     new Date().toISOString().split('T')[0]
   );
-  const [saleItems, setSaleItems] = useState([]);
+  const [saleItems, setSaleItems] = useState([{
+    id: Date.now(),
+    productId: '',
+    productCode: '',
+    productName: '',
+    quantity: 1,
+    unitPrice: 0,
+    total: 0
+  }]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [products, setProducts] = useState([]);
+  const [shouldPrint, setShouldPrint] = useState(true);
+  const [printLoading, setPrintLoading] = useState(false);
   
   const customerNameInputRef = useRef(null);
   const customerMobileInputRef = useRef(null);
@@ -31,25 +41,8 @@ function SalesForm({ sale, onSubmit, onCancel }) {
     return () => document.removeEventListener('keydown', handleEscape);
   }, [onCancel]);
 
+  // Focus on customer name field when component mounts
   useEffect(() => {
-    // Load products when component mounts
-    const loadProducts = async () => {
-      try {
-        setLoading(true);
-        const data = await fetchProducts();
-        setProducts(data);
-        setError('');
-      } catch (err) {
-        console.error('Failed to load products:', err);
-        setError('Failed to load products');
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    loadProducts();
-    
-    // Focus on customer name field when component mounts
     setTimeout(() => {
       if (customerNameInputRef.current) {
         customerNameInputRef.current.focus();
@@ -74,17 +67,9 @@ function SalesForm({ sale, onSubmit, onCancel }) {
           unitPrice: item.unitPrice,
           total: item.totalPrice || (item.quantity * item.unitPrice)
         })));
-      } else {
-        // Add one empty row for a new sale
-        addSaleItemRow();
-      }
-    } else {
-      // Initialize with one empty row for a new sale
-      if (saleItems.length === 0) {
-        addSaleItemRow();
       }
     }
-  }, [sale, saleItems.length]);
+  }, [sale]);
   
   const addSaleItemRow = (rowId = Date.now()) => {
     setSaleItems((prev) => [
@@ -173,12 +158,13 @@ function SalesForm({ sale, onSubmit, onCancel }) {
   };
 
   const handleQuantityChange = (e, rowId) => {
-    const quantity = parseInt(e.target.value) || 1;
+    const value = e.target.value;
+    const quantity = value === '' ? '' : (parseInt(value) || 1);
     
     setSaleItems((prev) =>
       prev.map((item) => {
         if (item.id === rowId) {
-          const total = item.unitPrice * quantity;
+          const total = item.unitPrice * (quantity || 0);
           return {
             ...item,
             quantity,
@@ -193,6 +179,16 @@ function SalesForm({ sale, onSubmit, onCancel }) {
   const handleQuantitySubmit = (e, rowId) => {
     if (e.key === 'Enter') {
       e.preventDefault();
+      
+      // Ensure quantity is at least 1 when moving to next row
+      setSaleItems(prev => 
+        prev.map(item => 
+          item.id === rowId && (!item.quantity || item.quantity === '') 
+            ? { ...item, quantity: 1, total: item.unitPrice * 1 }
+            : item
+        )
+      );
+
       // Add a new row if this is the last row
       const currentIndex = saleItems.findIndex(item => item.id === rowId);
       if (currentIndex === saleItems.length - 1) {
@@ -216,6 +212,19 @@ function SalesForm({ sale, onSubmit, onCancel }) {
 
   const calculateTotal = () => {
     return saleItems.reduce((sum, item) => sum + item.total, 0);
+  };
+
+  const handlePrint = async (saleData) => {
+    try {
+      setPrintLoading(true);
+      const response = await printSalesBill(saleData);
+      toast.success(response.message || 'Receipt printed successfully');
+    } catch (err) {
+      console.error('Print error:', err);
+      toast.error(err.message || 'Failed to print receipt');
+    } finally {
+      setPrintLoading(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -274,16 +283,28 @@ function SalesForm({ sale, onSubmit, onCancel }) {
       }
 
       // Use the createSale API directly when used standalone
-      await createSale(saleData);
+      const savedSale = await createSale(saleData);
       
       setSuccessMessage('Sale recorded successfully');
+
+      // Print receipt if checkbox is checked (in add mode)
+      if (shouldPrint) {
+        await handlePrint(savedSale);
+      }
       
       // Reset form
       setCustomerName('');
       setCustomerMobile('');
       setSaleDate(new Date().toISOString().split('T')[0]);
-      setSaleItems([]);
-      addSaleItemRow(); // Add one row for next entry
+      setSaleItems([{
+        id: Date.now(),
+        productId: '',
+        productCode: '',
+        productName: '',
+        quantity: 1,
+        unitPrice: 0,
+        total: 0
+      }]);
       
       // Focus back on customer name field
       setTimeout(() => {
@@ -317,6 +338,12 @@ function SalesForm({ sale, onSubmit, onCancel }) {
           {successMessage && (
             <div className='alert alert-success' role='alert'>
               {successMessage}
+            </div>
+          )}
+
+          {sale && (
+            <div className='mb-4'>
+              <h6 className='text-muted'>Bill #{sale.billNumber}</h6>
             </div>
           )}
 
@@ -453,20 +480,59 @@ function SalesForm({ sale, onSubmit, onCancel }) {
             </div>
 
             <div className='d-flex justify-content-between align-items-center mt-3'>
-              <button
-                type="button"
-                className='btn btn-secondary'
-                onClick={() => addSaleItemRow()}
-                disabled={loading}
-              >
-                + Add Product
-              </button>
+              <div className='d-flex align-items-center gap-3'>
+                <button
+                  type="button"
+                  className='btn btn-secondary'
+                  onClick={() => addSaleItemRow()}
+                  disabled={loading}
+                >
+                  + Add Product
+                </button>
+
+                {!sale && (
+                  <div className="form-check">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      id="printReceipt"
+                      checked={shouldPrint}
+                      onChange={(e) => setShouldPrint(e.target.checked)}
+                    />
+                    <label className="form-check-label" htmlFor="printReceipt">
+                      Print receipt
+                    </label>
+                  </div>
+                )}
+              </div>
 
               <div className='text-end'>
                 <div className='h5 mb-3'>
                   Total Amount: ₹{calculateTotal()}
                 </div>
                 <div className="d-flex gap-2 justify-content-end">
+                  {sale && (
+                    <button
+                      type="button"
+                      className='btn btn-info'
+                      onClick={() => handlePrint(sale)}
+                      disabled={printLoading}
+                    >
+                      {printLoading ? (
+                        <>
+                          <span
+                            className='spinner-border spinner-border-sm me-2'
+                            role='status'
+                            aria-hidden='true'
+                          ></span>
+                          Printing...
+                        </>
+                      ) : (
+                        'Print Receipt'
+                      )}
+                    </button>
+                  )}
+                  
                   {onCancel && (
                     <button
                       type="button"

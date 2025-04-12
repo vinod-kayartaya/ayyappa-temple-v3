@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.time.format.DateTimeFormatter;
 
 @Data
 @Entity
@@ -26,6 +27,9 @@ public class Sale {
     
     @Column(name = "total_amount", nullable = false)
     private BigDecimal totalAmount;
+    
+    @Column(name = "bill_number", nullable = false, unique = true)
+    private String billNumber;
     
     @Column(name = "created_by", nullable = false)
     private String createdBy;
@@ -53,9 +57,17 @@ public class Sale {
     }
     
     @PrePersist
-    protected void onCreate() {
-        id = UUID.randomUUID().toString();
-        createdAt = LocalDateTime.now();
+    public void onCreate() {
+        if (id == null) {
+            id = UUID.randomUUID().toString();
+        }
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+        if (billNumber == null) {
+            // Will be set by the service layer
+            billNumber = "";
+        }
         if (saleDate == null) {
             saleDate = LocalDateTime.now();
         }
