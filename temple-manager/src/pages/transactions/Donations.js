@@ -200,7 +200,7 @@ function Donations() {
           {error}
         </div>
       )}
-      
+
       <div className='mb-4'>
         <div className='d-flex justify-content-between align-items-end'>
           <h5 className='mb-0'>Donations</h5>
@@ -208,9 +208,9 @@ function Donations() {
             <div>
               <label className='form-label small mb-1'>Search</label>
               <input
-                type="text"
-                className="form-control"
-                placeholder="Search by name, receipt, phone..."
+                type='text'
+                className='form-control'
+                placeholder='Search by name, receipt, phone...'
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -238,25 +238,29 @@ function Donations() {
             </tr>
           </thead>
           <tbody>
-            {(filteredDonations || donations).map(donation => (
+            {(filteredDonations || donations).map((donation) => (
               <tr key={donation.id}>
                 <td>{donation.receiptNumber}</td>
                 <td>{formatDate(donation.donationDate)}</td>
                 <td>{donation.devoteeName}</td>
-                <td>{donation.donationCategory?.name}</td>
+                <td>{donation.donationCategoryName}</td>
                 <td>{formatCurrency(donation.amount)}</td>
                 <td>{donation.paymentMode}</td>
                 <td>
-                  <button 
+                  <button
                     className='btn btn-link btn-sm p-0 me-2'
                     onClick={() => handleEdit(donation)}
                   >
                     <i className='bi bi-pencil'></i>
                   </button>
-                  <button 
+                  <button
                     className='btn btn-link btn-sm p-0 text-danger'
                     onClick={() => {
-                      if (window.confirm('Are you sure you want to delete this donation?')) {
+                      if (
+                        window.confirm(
+                          'Are you sure you want to delete this donation?'
+                        )
+                      ) {
                         handleDelete(donation.id);
                       }
                     }}
@@ -273,7 +277,12 @@ function Donations() {
       {donations.length > 0 && (
         <div className='d-flex justify-content-between align-items-center mt-3'>
           <div className='text-muted'>
-            Showing {pagination.page * pagination.size + 1} to {Math.min((pagination.page + 1) * pagination.size, pagination.totalElements)} of {pagination.totalElements} entries
+            Showing {pagination.page * pagination.size + 1} to{' '}
+            {Math.min(
+              (pagination.page + 1) * pagination.size,
+              pagination.totalElements
+            )}{' '}
+            of {pagination.totalElements} entries
           </div>
           <Pagination
             currentPage={pagination.page}
@@ -287,36 +296,44 @@ function Donations() {
       {isEditing && (
         <>
           {/* Semi-transparent overlay for the left side */}
-          <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: '50%',
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.3)',
-            zIndex: 1040
-          }} onClick={handleCancel} />
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: '50%',
+              bottom: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.3)',
+              zIndex: 1040,
+            }}
+            onClick={handleCancel}
+          />
 
           {/* Edit panel on the right */}
-          <div style={{ 
-            position: 'fixed',
-            top: 0,
-            right: 0,
-            bottom: 0,
-            width: '50%',
-            backgroundColor: '#fff',
-            zIndex: 1050,
-            display: 'flex',
-            flexDirection: 'column',
-            boxShadow: '-4px 0 10px rgba(0,0,0,0.1)'
-          }}>
-            <div className='d-flex align-items-center p-3 border-bottom' style={{ backgroundColor: '#f8f9fa' }}>
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              right: 0,
+              bottom: 0,
+              width: '50%',
+              backgroundColor: '#fff',
+              zIndex: 1050,
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: '-4px 0 10px rgba(0,0,0,0.1)',
+            }}
+          >
+            <div
+              className='d-flex align-items-center p-3 border-bottom'
+              style={{ backgroundColor: '#f8f9fa' }}
+            >
               <h5 className='modal-title flex-grow-1 mb-0'>Edit Donation</h5>
-              <button 
-                type='button' 
-                className='btn-close' 
+              <button
+                type='button'
+                className='btn-close'
                 onClick={handleCancel}
-                aria-label="Close"
+                aria-label='Close'
               />
             </div>
             <div className='flex-grow-1 p-4' style={{ overflowY: 'auto' }}>

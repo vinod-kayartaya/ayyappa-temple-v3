@@ -83,7 +83,7 @@ function ExpensesReport() {
           <h5 className='card-title'>Expenses Report</h5>
 
           {/* Filters */}
-          <div className='row mb-4'>
+          <div className='row mb-4 d-print-none'>
             <div className='col-md-3'>
               <label className='form-label'>Start Date</label>
               <input
@@ -108,8 +108,24 @@ function ExpensesReport() {
             </div>
           </div>
 
+          {/* Date Range for Print View */}
+          <div className='d-none d-print-block mb-4'>
+            <div className='mb-3'>
+              <strong>Date Range:</strong>{' '}
+              {new Date(filters.startDate).toLocaleDateString()} to{' '}
+              {new Date(filters.endDate).toLocaleDateString()}
+            </div>
+          </div>
+
+          {/* Print Button */}
+          <div className='d-flex justify-content-end mb-3 d-print-none'>
+            <button className='btn btn-primary' onClick={() => window.print()}>
+              <i className='bi bi-printer me-2'></i>Print Report
+            </button>
+          </div>
+
           {/* Summary Cards as Filter Buttons */}
-          <div className='row mb-4'>
+          <div className='row mb-4 d-print-none'>
             <div className='col-md-2'>
               <div
                 className={`card ${
@@ -230,48 +246,73 @@ function ExpensesReport() {
               </div>
             </div>
           ) : (
-            <div className='table-responsive'>
-              <table className='table table-striped'>
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Number</th>
-                    <th>Type</th>
-                    <th>Paid To</th>
-                    <th>Purpose</th>
-                    <th>Approved By</th>
-                    <th className='text-end'>Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {expenses.map((expense) => (
-                    <tr key={expense.id}>
-                      <td>
-                        {new Date(expense.voucherDate).toLocaleDateString()}
-                      </td>
-                      <td>{expense.voucherNo}</td>
-                      <td>{expense.expenseType}</td>
-                      <td>{expense.paidTo}</td>
-                      <td>{expense.purpose}</td>
-                      <td>
-                        {expense.approvedBy
-                          ? `${expense.approvedBy.firstname} ${expense.approvedBy.lastname}`
-                          : '-'}
-                      </td>
-                      <td className='text-end'>₹{expense.amount.toFixed(2)}</td>
+            <>
+              <div className='table-responsive'>
+                <table className='table table-bordered'>
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Number</th>
+                      <th>Type</th>
+                      <th>Paid To</th>
+                      <th>Purpose</th>
+                      <th>Category</th>
+                      <th>Approved By</th>
+                      <th
+                        style={{
+                          minWidth: '120px',
+                          width: '200px',
+                          textAlign: 'right',
+                        }}
+                      >
+                        Amount
+                      </th>
                     </tr>
-                  ))}
-                  <tr className='table-info fw-bold'>
-                    <td colSpan='6' className='text-end'>
-                      Total:
-                    </td>
-                    <td className='text-end'>
-                      ₹{summary.totalAmount.toFixed(2)}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {expenses.map((expense) => (
+                      <tr key={expense.id}>
+                        <td>
+                          {new Date(expense.voucherDate).toLocaleDateString()}
+                        </td>
+                        <td>{expense.voucherNo}</td>
+                        <td>{expense.expenseType}</td>
+                        <td>{expense.paidTo}</td>
+                        <td>{expense.purpose}</td>
+                        <td>{expense.category?.name || '-'}</td>
+                        <td>
+                          {expense.approvedBy
+                            ? `${expense.approvedBy.firstname} ${expense.approvedBy.lastname}`
+                            : '-'}
+                        </td>
+                        <td style={{ textAlign: 'right' }}>
+                          ₹{Math.round(expense.amount)}
+                        </td>
+                      </tr>
+                    ))}
+                    <tr>
+                      <td
+                        colSpan='7'
+                        style={{
+                          textAlign: 'right',
+                          borderBottom: '1px solid #dee2e6',
+                        }}
+                      >
+                        <strong>Total:</strong>
+                      </td>
+                      <td
+                        style={{
+                          textAlign: 'right',
+                          borderBottom: '1px solid #dee2e6',
+                        }}
+                      >
+                        <strong>₹{Math.round(summary.totalAmount)}</strong>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </div>
       </div>
